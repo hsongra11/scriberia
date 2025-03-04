@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { NoteAIActions } from './ai-actions';
 import { NoteAudio } from './note-audio';
+import { AudioTranscription } from '@/components/audio/audio-transcription';
 
 interface NoteActionsProps {
   note?: Note;
@@ -86,10 +87,27 @@ export function NoteActions({
     }
   };
 
+  // Handle saving the transcription
+  const handleSaveTranscription = (transcription: string) => {
+    if (!note?.content || !onUpdate) return;
+
+    // Add transcription to note content
+    const timestamp = new Date().toISOString();
+    const transcriptionText = `\n\n🎙️ **Transcription** (${timestamp}):\n\n${transcription}\n\n`;
+    
+    // Update the note content with the transcription
+    onUpdate(note.content + transcriptionText);
+    
+    toast.success('Transcription added to note');
+  };
+
   return (
     <div className={cn('flex items-center justify-end gap-2', className)}>
       {/* Audio Recording */}
       <NoteAudio note={note} onUpdate={onUpdate} />
+      
+      {/* Audio Transcription */}
+      <AudioTranscription onSave={handleSaveTranscription} />
       
       {/* AI Actions */}
       <NoteAIActions note={note} onUpdate={onUpdate} />

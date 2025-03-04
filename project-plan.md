@@ -138,7 +138,7 @@ This implementation plan outlines the steps to transform the existing AI chatbot
   - **Step Dependencies**: Step 5
   - **User Instructions**: None
 
-- [ ] Step 13: Implement Deepgram Integration
+- [x] Step 13: Implement Deepgram Integration
   - **Task**: Integrate Deepgram for audio transcription
   - **Files**:
     - `lib/audio/transcribe.ts`: Create transcription utility
@@ -149,7 +149,7 @@ This implementation plan outlines the steps to transform the existing AI chatbot
 
 ## Task Management
 
-- [ ] Step 14: Implement Task Management System
+- [x] Step 14: Implement Task Management System
   - **Task**: Create task management functionality
   - **Files**:
     - `components/tasks/task-list.tsx`: Create task list component
