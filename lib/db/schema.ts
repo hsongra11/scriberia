@@ -9,12 +9,26 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer,
 } from 'drizzle-orm/pg-core';
+
+// Migrations table for tracking seeding and other migrations
+export const migrations = pgTable('Migrations', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: varchar('name', { length: 255 }).notNull(),
+  hash: varchar('hash', { length: 255 }).notNull(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type Migration = InferSelectModel<typeof migrations>;
 
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
+  name: varchar('name', { length: 100 }),
+  avatarUrl: text('avatarUrl'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
 });
 
 export type User = InferSelectModel<typeof user>;
@@ -64,6 +78,90 @@ export const vote = pgTable(
 );
 
 export type Vote = InferSelectModel<typeof vote>;
+
+export const template = pgTable('Template', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  content: text('content').notNull(),
+  category: varchar('category', { 
+    enum: ['brain-dump', 'journal', 'to-do', 'mood-tracking', 'custom'] 
+  }).notNull(),
+  isDefault: boolean('isDefault').notNull().default(false),
+  userId: uuid('userId').references(() => user.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+});
+
+export type Template = InferSelectModel<typeof template>;
+
+export const note = pgTable('Note', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  templateId: uuid('templateId').references(() => template.id),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  isArchived: boolean('isArchived').notNull().default(false),
+  isDeleted: boolean('isDeleted').notNull().default(false),
+  category: varchar('category', { 
+    enum: ['brain-dump', 'journal', 'to-do', 'mood-tracking', 'custom'] 
+  }).notNull(),
+  lastEditedAt: timestamp('lastEditedAt').notNull().defaultNow(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type Note = InferSelectModel<typeof note>;
+
+export const task = pgTable('Task', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  content: text('content').notNull(),
+  isCompleted: boolean('isCompleted').notNull().default(false),
+  dueDate: timestamp('dueDate'),
+  priority: integer('priority').default(0),
+  noteId: uuid('noteId').references(() => note.id),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  completedAt: timestamp('completedAt'),
+});
+
+export type Task = InferSelectModel<typeof task>;
+
+export const attachment = pgTable('Attachment', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  noteId: uuid('noteId')
+    .notNull()
+    .references(() => note.id),
+  type: varchar('type', { 
+    enum: ['audio', 'image', 'file'] 
+  }).notNull(),
+  name: text('name').notNull(),
+  url: text('url').notNull(),
+  storageKey: text('storageKey').notNull(),
+  transcription: text('transcription'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type Attachment = InferSelectModel<typeof attachment>;
+
+export const noteShare = pgTable('NoteShare', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  noteId: uuid('noteId')
+    .notNull()
+    .references(() => note.id),
+  shareLink: text('shareLink').notNull(),
+  expiresAt: timestamp('expiresAt'),
+  isActive: boolean('isActive').notNull().default(true),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  createdBy: uuid('createdBy')
+    .notNull()
+    .references(() => user.id),
+});
+
+export type NoteShare = InferSelectModel<typeof noteShare>;
 
 export const document = pgTable(
   'Document',

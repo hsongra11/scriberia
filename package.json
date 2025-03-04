@@ -1,7 +1,8 @@
 {
-  "name": "ai-chatbot",
+  "name": "hyperscribe",
   "version": "0.1.0",
   "private": true,
+  "description": "AI-powered note-taking and task management application",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "tsx lib/db/migrate && next build",
@@ -15,7 +16,13 @@
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
-    "db:up": "drizzle-kit up"
+    "db:up": "drizzle-kit up",
+    "db:seed": "npx tsx lib/db/seed/seed.ts",
+    "db:test:schema": "npx tsx lib/db/tests/schema.test.ts",
+    "db:test:migrations": "npx tsx scripts/test-migrations.ts",
+    "test:db": "pnpm run db:test:schema && pnpm run db:test:migrations",
+    "db:init-and-test": "pnpm run db:migrate && pnpm run test:db && pnpm run db:seed",
+    "check:env": "npx tsx scripts/check-env.ts"
   },
   "dependencies": {
     "@ai-sdk/fireworks": "^0.1.8",
@@ -25,6 +32,7 @@
     "@codemirror/state": "^6.5.0",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.35.3",
+    "@deepgram/sdk": "^3.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -35,6 +43,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.3",
     "@radix-ui/react-visually-hidden": "^1.1.0",
+    "@supabase/supabase-js": "^2.39.3",
     "@vercel/analytics": "^1.3.1",
     "@vercel/blob": "^0.24.1",
     "@vercel/postgres": "^0.10.0",

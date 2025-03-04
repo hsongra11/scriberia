@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { AppInitializer } from './app-init';
 
 import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
-  title: 'Next.js Chatbot Template',
-  description: 'Next.js chatbot template using the AI SDK.',
+  title: 'HyperScribe - Smart Note-Taking App',
+  description: 'Organize your thoughts, tasks, and ideas with HyperScribe, the AI-powered note-taking app.',
 };
 
 export const viewport = {
@@ -63,6 +64,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Initialize the app */}
+          <AppInitializer />
           <Toaster position="top-center" />
           {children}
         </ThemeProvider>

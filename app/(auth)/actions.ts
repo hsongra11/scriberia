@@ -2,13 +2,19 @@
 
 import { z } from 'zod';
 
-import { createUser, getUser } from '@/lib/db/queries';
+import { createUser, getUser, updateUserProfile } from '@/lib/db/queries';
 
 import { signIn } from './auth';
 
-const authFormSchema = z.object({
+const loginFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
+});
+
+const registerFormSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(2).optional(),
 });
 
 export interface LoginActionState {
@@ -20,7 +26,7 @@ export const login = async (
   formData: FormData,
 ): Promise<LoginActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
+    const validatedData = loginFormSchema.parse({
       email: formData.get('email'),
       password: formData.get('password'),
     });
@@ -56,9 +62,10 @@ export const register = async (
   formData: FormData,
 ): Promise<RegisterActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
+    const validatedData = registerFormSchema.parse({
       email: formData.get('email'),
       password: formData.get('password'),
+      name: formData.get('name') || undefined,
     });
 
     const [user] = await getUser(validatedData.email);
@@ -66,10 +73,17 @@ export const register = async (
     if (user) {
       return { status: 'user_exists' } as RegisterActionState;
     }
-    await createUser(validatedData.email, validatedData.password);
+    
+    await createUser(
+      validatedData.email, 
+      validatedData.password, 
+      validatedData.name
+    );
+    
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
+      name: validatedData.name,
       redirect: false,
     });
 
@@ -79,6 +93,7 @@ export const register = async (
       return { status: 'invalid_data' };
     }
 
+    console.error('Registration error:', error);
     return { status: 'failed' };
   }
 };

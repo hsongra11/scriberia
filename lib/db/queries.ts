@@ -35,14 +35,54 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(email: string, password: string, name?: string) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
+  const now = new Date();
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await db.insert(user).values({ 
+      email, 
+      password: hash,
+      name: name || null,
+      createdAt: now
+    });
   } catch (error) {
     console.error('Failed to create user in database');
+    throw error;
+  }
+}
+
+export async function updateUserProfile({
+  userId,
+  name,
+  avatarUrl,
+}: {
+  userId: string;
+  name?: string;
+  avatarUrl?: string;
+}) {
+  try {
+    const updateValues: Partial<User> = {};
+    
+    if (name !== undefined) {
+      updateValues.name = name;
+    }
+    
+    if (avatarUrl !== undefined) {
+      updateValues.avatarUrl = avatarUrl;
+    }
+    
+    if (Object.keys(updateValues).length === 0) {
+      return null; // Nothing to update
+    }
+    
+    return await db
+      .update(user)
+      .set(updateValues)
+      .where(eq(user.id, userId));
+  } catch (error) {
+    console.error('Failed to update user profile in database');
     throw error;
   }
 }

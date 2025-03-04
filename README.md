@@ -59,3 +59,76 @@ pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000/).
+
+# HyperScribe
+
+AI-powered note-taking and task management application built with Next.js and Supabase.
+
+## Features
+
+- [Next.js](https://nextjs.org) App Router
+  - Advanced routing for seamless navigation and performance
+  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
+- [AI SDK](https://sdk.vercel.ai/docs)
+  - Unified API for generating text, structured objects, and tool calls with LLMs
+  - Hooks for building dynamic chat and generative user interfaces
+  - Supports OpenAI (default), Anthropic, Cohere, and other model providers
+- [shadcn/ui](https://ui.shadcn.com)
+  - Styling with [Tailwind CSS](https://tailwindcss.com)
+  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
+- Data Persistence
+  - [Supabase](https://supabase.io) for managed PostgreSQL database
+  - [Drizzle ORM](https://orm.drizzle.team) for type-safe database access
+  - Full migration system for database schema management
+
+## Database Testing and Migrations
+
+HyperScribe includes a robust database testing and migration system to ensure schema integrity and data consistency.
+
+### Database Testing Scripts
+
+- `pnpm db:test:schema`: Tests the database schema, checking for table existence, column definitions, and relationship integrity
+- `pnpm db:test:migrations`: Tests migration files and validates migration functionality (up/down)
+- `pnpm db:seed`: Seeds the database with test data for development and testing
+- `pnpm test:db`: Runs all database tests in sequence
+- `pnpm db:init-and-test`: Complete solution - runs migrations, tests the database, and seeds test data
+
+### Running Database Tests
+
+Before any major schema changes or deployments, run the database tests to ensure integrity:
+
+```bash
+# Make sure your database connection is set up in .env.local
+
+# Check your environment variables are loaded correctly
+pnpm check:env
+
+# For a fresh setup (run migrations, test, and seed):
+pnpm db:init-and-test
+
+# To run just the tests (without migrations or seeding):
+pnpm test:db
+
+# To seed test data only:
+pnpm db:seed
+```
+
+### Troubleshooting Environment Variables
+
+If you encounter errors related to missing environment variables:
+
+1. Make sure your `.env.local` file exists and contains all required variables
+2. Run `pnpm check:env` to verify which variables are being detected
+3. Check if the file path to `.env.local` is correct (it should be in your project root)
+4. Try restarting your terminal or IDE
+5. Ensure the file is not being ignored by git or other tools
+
+### Required Environment Variables
+
+These variables are required for the application to work properly:
+
+- `POSTGRES_URL`: Connection string for your PostgreSQL database
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
+- `AUTH_SECRET`: Secret for NextAuth.js authentication
