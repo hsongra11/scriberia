@@ -132,3 +132,10 @@ These variables are required for the application to work properly:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
 - `AUTH_SECRET`: Secret for NextAuth.js authentication
+- `OPENAI_API_KEY`: Your OpenAI API key for AI features
+
+Optional AI provider API keys:
+- `GROQ_API_KEY`: For Groq LLM models (Llama, Mixtral)
+- `ANTHROPIC_API_KEY`: For Anthropic Claude models
+- `FIREWORKS_API_KEY`: For Fireworks AI reasoning models
+- `DEEPGRAM_API_KEY`: For voice transcription features

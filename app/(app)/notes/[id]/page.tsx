@@ -1,20 +1,28 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
 
 import { NoteContainer } from '@/components/notes/note-container';
 import { NoteHeader } from '@/components/notes/note-header';
 import { NoteContent } from '@/components/notes/note-content';
 import { NoteActions } from '@/components/notes/note-actions';
-import { auth } from '../../../(auth)/auth';
+import { Note } from '@/lib/db/schema';
 
-// Define a type for our sample notes
+// Define a type for our sample notes that matches the schema
 type SampleNote = {
   id: string;
   title: string;
   content: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date; // For UI purposes
   userId: string;
-  templateId: string;
+  templateId: string | null;
+  category: 'brain-dump' | 'journal' | 'to-do' | 'mood-tracking' | 'custom';
+  isArchived: boolean;
+  isDeleted: boolean;
+  lastEditedAt: Date;
 };
 
 // Sample note data (this would be fetched from the database)
@@ -45,8 +53,12 @@ Lisa: QA Tester
 3. Set up project management tools`,
     createdAt: new Date('2023-06-15T10:00:00'),
     updatedAt: new Date('2023-06-15T11:30:00'),
+    lastEditedAt: new Date('2023-06-15T11:30:00'),
     userId: 'user1',
-    templateId: 'notes'
+    templateId: 'notes',
+    category: 'custom',
+    isArchived: false,
+    isDeleted: false
   },
   '2': {
     id: '2',
@@ -67,8 +79,12 @@ Lisa: QA Tester
 - Add blog for updates`,
     createdAt: new Date('2023-06-10T14:00:00'),
     updatedAt: new Date('2023-06-14T09:15:00'),
+    lastEditedAt: new Date('2023-06-14T09:15:00'),
     userId: 'user1',
-    templateId: 'braindump'
+    templateId: 'braindump',
+    category: 'brain-dump',
+    isArchived: false,
+    isDeleted: false
   },
   '3': {
     id: '3',
@@ -84,8 +100,12 @@ Lisa: QA Tester
 - Prepare presentation for next week`,
     createdAt: new Date('2023-06-12T08:30:00'),
     updatedAt: new Date('2023-06-12T08:30:00'),
+    lastEditedAt: new Date('2023-06-12T08:30:00'),
     userId: 'user1',
-    templateId: 'todo'
+    templateId: 'todo',
+    category: 'to-do',
+    isArchived: false,
+    isDeleted: false
   }
 };
 
@@ -95,29 +115,78 @@ interface NotePageProps {
   };
 }
 
-export default async function NotePage({ params }: NotePageProps) {
-  const session = await auth();
-  const user = session?.user;
+export default function NotePage({ params }: NotePageProps) {
+  const router = useRouter();
+  const [note, setNote] = useState<SampleNote | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   
-  const note = SAMPLE_NOTES[params.id];
-  
+  useEffect(() => {
+    // Fetch the note data
+    const fetchedNote = SAMPLE_NOTES[params.id];
+    if (fetchedNote) {
+      setNote(fetchedNote);
+    } else {
+      notFound();
+    }
+  }, [params.id]);
+
   if (!note) {
-    notFound();
+    return <div>Loading...</div>;
   }
+  
+  const handleContentChange = (content: string) => {
+    setNote({
+      ...note,
+      content,
+      updatedAt: new Date(),
+      lastEditedAt: new Date()
+    });
+  };
+  
+  const handleTitleChange = (title: string) => {
+    setNote({
+      ...note,
+      title,
+      updatedAt: new Date(),
+      lastEditedAt: new Date()
+    });
+  };
+  
+  const handleSave = () => {
+    // Here you would save the note to your database
+    setIsEditing(false);
+    // Simulate saving
+    console.log('Saving note:', note);
+  };
+  
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
   
   return (
     <div className="flex flex-col flex-1 w-full h-full">
-      <NoteContainer>
+      <NoteContainer note={note} isEditing={isEditing}>
         <div className="flex items-center justify-between">
           <NoteHeader 
+            note={note}
             title={note.title}
+            onTitleChange={handleTitleChange}
+            isEditing={isEditing}
+            onSave={handleSave}
+            onEdit={handleEdit}
             createdAt={note.createdAt}
             updatedAt={note.updatedAt}
           />
-          <NoteActions />
+          <NoteActions 
+            note={note}
+            onUpdate={handleContentChange}
+          />
         </div>
         <NoteContent 
+          note={note}
           content={note.content}
+          onContentChange={handleContentChange}
+          isEditing={isEditing}
         />
       </NoteContainer>
     </div>
