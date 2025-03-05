@@ -1,7 +1,7 @@
-import { myProvider } from '@/lib/ai/models';
+import { smoothStream, streamText, streamObject } from 'ai';
+import { myProvider, safeLanguageModel } from '@/lib/ai/models';
 import { sheetPrompt, updateDocumentPrompt } from '@/lib/ai/prompts';
 import { createDocumentHandler } from '@/lib/artifacts/server';
-import { streamObject } from 'ai';
 import { z } from 'zod';
 
 export const sheetDocumentHandler = createDocumentHandler<'sheet'>({
@@ -10,7 +10,7 @@ export const sheetDocumentHandler = createDocumentHandler<'sheet'>({
     let draftContent = '';
 
     const { fullStream } = streamObject({
-      model: myProvider.languageModel('artifact-model'),
+      model: safeLanguageModel('artifact-model'),
       system: sheetPrompt,
       prompt: title,
       schema: z.object({
@@ -47,7 +47,7 @@ export const sheetDocumentHandler = createDocumentHandler<'sheet'>({
     let draftContent = '';
 
     const { fullStream } = streamObject({
-      model: myProvider.languageModel('artifact-model'),
+      model: safeLanguageModel('artifact-model'),
       system: updateDocumentPrompt(document.content, 'sheet'),
       prompt: description,
       schema: z.object({

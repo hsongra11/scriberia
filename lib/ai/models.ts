@@ -24,6 +24,7 @@ if (providerInstances.openai) {
   languageModels['openai-small'] = providerInstances.openai(providers.openai.smallModel);
   languageModels['openai-large'] = providerInstances.openai(providers.openai.largeModel);
   languageModels['openai-title'] = providerInstances.openai(providers.openai.titleModel);
+  languageModels['artifact-model'] = providerInstances.openai(providers.openai.smallModel);
   
   imageModels['small-model'] = providerInstances.openai.image('dall-e-2');
   imageModels['large-model'] = providerInstances.openai.image('dall-e-3');

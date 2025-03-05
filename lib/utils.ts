@@ -139,6 +139,12 @@ export function sanitizeResponseMessages({
   messages: Array<ResponseMessage>;
   reasoning: string | undefined;
 }) {
+  // Handle case where messages is undefined or not an array
+  if (!messages || !Array.isArray(messages)) {
+    console.warn('sanitizeResponseMessages received invalid messages:', messages);
+    return [];
+  }
+
   const toolResultIds: Array<string> = [];
 
   for (const message of messages) {
