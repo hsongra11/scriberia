@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import postgres from 'postgres';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import { config } from 'dotenv';
 import {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Template } from "@/lib/db/schema";
+import type { Template } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -63,14 +63,14 @@ export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListP
   if (templates.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <FileText className="h-16 w-16 text-muted-foreground mb-4" />
+        <FileText className="size-16 text-muted-foreground mb-4" />
         <h3 className="text-xl font-semibold mb-2">No Templates</h3>
         <p className="text-muted-foreground mb-6">
           You haven&apos;t created any templates yet.
         </p>
         <Button asChild>
           <Link href="/templates/new">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             Create New Template
           </Link>
         </Button>
@@ -95,14 +95,14 @@ export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListP
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="size-8">
+                    <MoreHorizontal className="size-4" />
                     <span className="sr-only">Actions</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => router.push(`/templates/${template.id}/edit`)}>
-                    <Edit className="mr-2 h-4 w-4" />
+                    <Edit className="mr-2 size-4" />
                     Edit
                   </DropdownMenuItem>
                   {onDuplicate && (
@@ -116,7 +116,7 @@ export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListP
                         }
                       }}
                     >
-                      <Copy className="mr-2 h-4 w-4" />
+                      <Copy className="mr-2 size-4" />
                       Duplicate
                     </DropdownMenuItem>
                   )}
@@ -134,7 +134,7 @@ export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListP
                         }
                       }}
                     >
-                      <Trash className="mr-2 h-4 w-4" />
+                      <Trash className="mr-2 size-4" />
                       Delete
                     </DropdownMenuItem>
                   )}
@@ -146,7 +146,7 @@ export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListP
               {template.description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-grow">
+          <CardContent className="grow">
             <div className={cn(
               "text-sm text-muted-foreground whitespace-pre-wrap overflow-hidden transition-all",
               expandedId === template.id ? "max-h-96" : "max-h-24"

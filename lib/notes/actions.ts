@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 import { note as noteSchema, template as templateSchema } from "@/lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const noteFormSchema = z.object({

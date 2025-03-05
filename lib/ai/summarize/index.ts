@@ -1,6 +1,5 @@
-import { myProvider } from '../models';
 import { summarizeNotePrompt } from '../prompts';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -14,7 +13,7 @@ const openai = new OpenAI({
  * @param modelId The AI model to use for summarization (optional)
  * @returns A promise resolving to the summarized content
  */
-export async function summarizeNote(content: string, modelId: string = 'openai-small'): Promise<string> {
+export async function summarizeNote(content: string, modelId = 'openai-small'): Promise<string> {
   try {
     if (!content || content.trim().length === 0) {
       return 'Cannot summarize empty content';

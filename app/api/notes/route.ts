@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { db } from '@/lib/db';
 import { note, attachment } from '@/lib/db/schema';
-import { desc, eq, and, like, or, count, sql, inArray, SQL } from 'drizzle-orm';
+import { desc, eq, and, like, or, count, inArray, type SQL } from 'drizzle-orm';
 import { z } from 'zod';
 
 // Validation schema for creating a new note
@@ -29,8 +29,8 @@ export async function GET(req: NextRequest) {
     const filter = url.searchParams.get('filter');
     const search = url.searchParams.get('search');
 
-    const page = pageParam ? parseInt(pageParam) : 1;
-    const pageSize = pageSizeParam ? parseInt(pageSizeParam) : 12;
+    const page = pageParam ? Number.parseInt(pageParam) : 1;
+    const pageSize = pageSizeParam ? Number.parseInt(pageSizeParam) : 12;
     const offset = (page - 1) * pageSize;
 
     // Build the base query conditions
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    let conditions = [
+    const conditions = [
       eq(note.userId, session.user.id),
       eq(note.isDeleted, false),
     ];

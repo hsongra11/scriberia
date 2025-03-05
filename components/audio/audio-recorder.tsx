@@ -104,7 +104,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
             size="icon"
             title="Start recording"
           >
-            <Mic className="h-4 w-4" />
+            <Mic className="size-4" />
           </Button>
         )}
 
@@ -116,7 +116,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
               size="icon"
               title="Stop recording"
             >
-              <Square className="h-4 w-4" />
+              <Square className="size-4" />
             </Button>
 
             <Button
@@ -125,7 +125,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
               size="icon"
               title={isPaused ? 'Resume recording' : 'Pause recording'}
             >
-              {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+              {isPaused ? <Play className="size-4" /> : <Pause className="size-4" />}
             </Button>
           </>
         )}
@@ -138,7 +138,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
               size="icon"
               title="Clear recording"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="size-4" />
             </Button>
 
             <Button
@@ -147,7 +147,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
               size="icon"
               title="Save recording"
             >
-              <Save className="h-4 w-4" />
+              <Save className="size-4" />
             </Button>
 
             <Button
@@ -156,7 +156,7 @@ export function AudioRecorder({ onSave, className = '' }: AudioRecorderProps) {
               size="icon"
               title="Record new"
             >
-              <Mic className="h-4 w-4" />
+              <Mic className="size-4" />
             </Button>
           </>
         )}

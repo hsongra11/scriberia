@@ -40,7 +40,7 @@ export default async function NotePage({ params, searchParams }: NotePageProps) 
         <p className="text-muted-foreground mb-6">{error}</p>
         <Button asChild>
           <Link href="/notes">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Back to Notes
           </Link>
         </Button>
@@ -53,7 +53,7 @@ export default async function NotePage({ params, searchParams }: NotePageProps) 
       <div className="mb-4">
         <Button variant="ghost" asChild>
           <Link href="/notes">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Back to Notes
           </Link>
         </Button>

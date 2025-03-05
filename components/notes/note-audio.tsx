@@ -11,7 +11,7 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from '@/components/ui/alert-dialog';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 
 interface NoteAudioProps {
   note?: Note;
@@ -52,7 +52,7 @@ export function NoteAudio({ note, onUpdate, className = '' }: NoteAudioProps) {
           className={className}
           title="Record audio"
         >
-          <Mic className="h-4 w-4 mr-2" />
+          <Mic className="size-4 mr-2" />
           Record
         </Button>
       </AlertDialogTrigger>
@@ -64,9 +64,9 @@ export function NoteAudio({ note, onUpdate, className = '' }: NoteAudioProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(false)}
-              className="h-6 w-6"
+              className="size-6"
             >
-              <X className="h-4 w-4" />
+              <X className="size-4" />
             </Button>
           </AlertDialogTitle>
         </AlertDialogHeader>

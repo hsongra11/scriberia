@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Template } from '@/lib/db/schema';
+import type { Template } from '@/lib/db/schema';
 import { 
   Dialog, 
   DialogContent, 
@@ -22,7 +21,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { TemplateCategory } from '@/lib/templates/default-templates';
 
 interface TemplateSelectorProps {
   templates: Template[];
@@ -55,7 +53,7 @@ export function TemplateSelector({
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(template => 
         template.name.toLowerCase().includes(query) || 
-        (template.description && template.description.toLowerCase().includes(query))
+        (template.description?.toLowerCase().includes(query))
       );
     }
     
@@ -109,7 +107,7 @@ export function TemplateSelector({
         
         <div className="flex items-center gap-2 mt-4">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
             <Input
               placeholder="Search templates..."
               className="pl-8"
@@ -144,12 +142,19 @@ export function TemplateSelector({
             filteredTemplates.map((template) => (
               <div
                 key={template.id}
+                role="button"
+                tabIndex={0}
                 className={`border rounded-md p-3 cursor-pointer transition-all hover:border-primary/50 ${
                   selectedTemplateId === template.id 
                     ? 'border-primary bg-primary/10' 
                     : ''
                 }`}
                 onClick={() => handleTemplateSelect(template)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleTemplateSelect(template);
+                  }
+                }}
               >
                 <h3 className="font-medium">
                   {template.name}

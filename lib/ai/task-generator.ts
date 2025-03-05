@@ -4,7 +4,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { StructuredOutputParser } from 'langchain/output_parsers';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { z } from 'zod';
-import { Note } from '../db/schema';
+import type { Note } from '../db/schema';
 
 // Define the GeneratedTask type
 export interface GeneratedTask {

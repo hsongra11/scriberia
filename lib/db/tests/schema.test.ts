@@ -1,9 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
-import { eq } from 'drizzle-orm';
 import * as schema from '../schema';
-import path from 'path';
 import { config } from 'dotenv';
 
 // Load environment variables from .env.local at the very beginning
@@ -240,7 +237,7 @@ async function runTests() {
   `;
   
   const tableCountResult = await client.unsafe(tableCountQuery).execute();
-  const tableCount = parseInt(tableCountResult[0].table_count);
+  const tableCount = Number.parseInt(tableCountResult[0].table_count);
   
   if (tableCount === 0) {
     console.log('No tables found in the database. This might be expected if migrations haven\'t been run yet.');

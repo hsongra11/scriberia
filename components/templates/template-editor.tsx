@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Template } from "@/lib/db/schema";
+import type { Template } from "@/lib/db/schema";
 import {
   Form,
   FormControl,
@@ -110,7 +110,7 @@ export function TemplateEditor({ template, isNew }: TemplateEditorProps) {
       <div className="flex items-center mb-8">
         <Button variant="ghost" asChild className="mr-4">
           <Link href="/templates">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Back to Templates
           </Link>
         </Button>
@@ -219,7 +219,7 @@ export function TemplateEditor({ template, isNew }: TemplateEditorProps) {
               type="submit" 
               disabled={isSubmitting}
             >
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 size-4" />
               {isSubmitting 
                 ? isNew ? "Creating..." : "Updating..." 
                 : isNew ? "Create Template" : "Update Template"

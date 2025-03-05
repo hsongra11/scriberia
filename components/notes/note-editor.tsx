@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Note, Template, Task } from "@/lib/db/schema";
+import type { Note, Template, Task } from "@/lib/db/schema";
 import { createNote, updateNote } from "@/lib/notes/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ import {
 import { NoteContent } from "@/components/notes/note-content";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Save, ArchiveIcon, Trash2, Share } from "lucide-react";
+import { Save, ArchiveIcon, Trash2, Share } from "lucide-react";
 
 // Form validation schema
 const formSchema = z.object({
@@ -72,13 +72,16 @@ export function NoteEditor({ note, templates = [], isNewNote }: NoteEditorProps)
     }, 2000)
   ).current;
 
+  // Extract form.watch() to a separate variable for dependency array
+  const formValues = form.watch();
+  
   // Handle auto-save when form values change
   useEffect(() => {
     if (isDirty && !isNewNote && note?.id) {
       setIsSaving(true);
       debouncedSave(form.getValues());
     }
-  }, [form.watch(), isDirty, isNewNote]);
+  }, [formValues, isDirty, isNewNote, note?.id, debouncedSave, form]);
 
   // Clean up debounce on unmount
   useEffect(() => {
@@ -287,7 +290,7 @@ export function NoteEditor({ note, templates = [], isNewNote }: NoteEditorProps)
                 isSaving && "bg-amber-600 hover:bg-amber-700"
               )}
             >
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 size-4" />
               {isSaving ? "Saving..." : "Save"}
             </Button>
           </div>
@@ -303,7 +306,7 @@ export function NoteEditor({ note, templates = [], isNewNote }: NoteEditorProps)
                     console.log("Share note", note?.id);
                   }}
                 >
-                  <Share className="mr-2 h-4 w-4" />
+                  <Share className="mr-2 size-4" />
                   Share
                 </Button>
                 <Button
@@ -314,7 +317,7 @@ export function NoteEditor({ note, templates = [], isNewNote }: NoteEditorProps)
                     console.log("Archive note", note?.id);
                   }}
                 >
-                  <ArchiveIcon className="mr-2 h-4 w-4" />
+                  <ArchiveIcon className="mr-2 size-4" />
                   Archive
                 </Button>
                 <Button
@@ -327,7 +330,7 @@ export function NoteEditor({ note, templates = [], isNewNote }: NoteEditorProps)
                     }
                   }}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 size-4" />
                   Delete
                 </Button>
               </>

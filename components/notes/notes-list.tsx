@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -108,7 +108,7 @@ export function NotesList({ className }: NotesListProps) {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: pageSize }).map((_, i) => (
-            <Card key={i} className="h-64 animate-pulse">
+            <Card key={`loading-note-card-${i}`} className="h-64 animate-pulse">
               <CardHeader className="h-1/2 bg-muted" />
               <CardContent className="space-y-2 p-4">
                 <div className="h-4 w-3/4 rounded-md bg-muted" />
@@ -128,7 +128,7 @@ export function NotesList({ className }: NotesListProps) {
                       {note.title || 'Untitled Note'}
                       {hasAudioAttachment(note) && (
                         <span className="ml-2 inline-flex items-center">
-                          <FileAudio className="h-4 w-4 text-blue-500" />
+                          <FileAudio className="size-4 text-blue-500" />
                         </span>
                       )}
                     </CardTitle>
@@ -161,7 +161,7 @@ export function NotesList({ className }: NotesListProps) {
                         router.push(`/notes/${note.id}?edit=true`);
                       }}
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="size-4" />
                       <span className="sr-only">Edit</span>
                     </Button>
                     {hasAudioAttachment(note) ? (
@@ -174,7 +174,7 @@ export function NotesList({ className }: NotesListProps) {
                           router.push(`/notes/${note.id}?record=true`);
                         }}
                       >
-                        <Mic className="h-4 w-4" />
+                        <Mic className="size-4" />
                         <span className="sr-only">Record</span>
                       </Button>
                     ) : null}
@@ -188,7 +188,7 @@ export function NotesList({ className }: NotesListProps) {
                         router.push(`/notes/${note.id}?share=true`);
                       }}
                     >
-                      <Share className="h-4 w-4" />
+                      <Share className="size-4" />
                       <span className="sr-only">Share</span>
                     </Button>
                     <Button
@@ -202,7 +202,7 @@ export function NotesList({ className }: NotesListProps) {
                         }
                       }}
                     >
-                      <Trash className="h-4 w-4" />
+                      <Trash className="size-4" />
                       <span className="sr-only">Delete</span>
                     </Button>
                   </div>
@@ -219,7 +219,7 @@ export function NotesList({ className }: NotesListProps) {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="size-4" />
                 <span className="sr-only">Previous Page</span>
               </Button>
               <div className="text-sm">
@@ -231,7 +231,7 @@ export function NotesList({ className }: NotesListProps) {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="size-4" />
                 <span className="sr-only">Next Page</span>
               </Button>
             </div>
@@ -240,7 +240,7 @@ export function NotesList({ className }: NotesListProps) {
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="mb-4 rounded-full bg-primary/10 p-3 text-primary">
-            <FileText className="h-6 w-6" />
+            <FileText className="size-6" />
           </div>
           <h3 className="mb-2 text-xl font-semibold">No notes found</h3>
           <p className="mb-4 max-w-sm text-muted-foreground">

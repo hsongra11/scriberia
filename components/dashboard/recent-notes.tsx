@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Clock, ArrowRight } from 'lucide-react';
@@ -44,7 +44,7 @@ export function RecentNotes({ className, limit = 5 }: RecentNotesProps) {
         <CardTitle>Recent Notes</CardTitle>
         <Link href="/notes">
           <Button variant="ghost" size="sm" className="ml-auto gap-1">
-            View All <ArrowRight className="h-4 w-4" />
+            View All <ArrowRight className="size-4" />
           </Button>
         </Link>
       </CardHeader>
@@ -53,7 +53,7 @@ export function RecentNotes({ className, limit = 5 }: RecentNotesProps) {
           <div className="space-y-2">
             {Array.from({ length: limit }).map((_, i) => (
               <div 
-                key={i} 
+                key={`loading-note-${i}`} 
                 className="h-16 rounded-md bg-muted animate-pulse"
               />
             ))}
@@ -70,7 +70,7 @@ export function RecentNotes({ className, limit = 5 }: RecentNotesProps) {
                   <div className="flex-1 space-y-1">
                     <p className="font-medium leading-none">{note.title || 'Untitled Note'}</p>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="mr-1 h-3 w-3" />
+                      <Clock className="mr-1 size-3" />
                       {note.lastEditedAt && note.lastEditedAt > note.createdAt ? (
                         <span>Updated {formatDistanceToNow(new Date(note.lastEditedAt), { addSuffix: true })}</span>
                       ) : (
@@ -84,10 +84,10 @@ export function RecentNotes({ className, limit = 5 }: RecentNotesProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="mb-4 text-muted-foreground">You haven't created any notes yet</p>
+            <p className="mb-4 text-muted-foreground">You haven&apos;t created any notes yet</p>
             <Link href="/notes/new">
               <Button size="sm" className="gap-1">
-                <Plus className="h-4 w-4" /> Create Note
+                <Plus className="size-4" /> Create Note
               </Button>
             </Link>
           </div>

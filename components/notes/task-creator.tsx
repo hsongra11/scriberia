@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Task } from "@/lib/db/schema";
+import type { Task } from "@/lib/db/schema";
 
 interface TaskCreatorProps {
   noteId: string;
@@ -47,7 +47,7 @@ export function TaskCreator({ noteId, onCreateTask }: TaskCreatorProps) {
         className="mt-2 w-full text-muted-foreground"
         onClick={() => setIsCreating(true)}
       >
-        <PlusCircle className="mr-2 h-4 w-4" />
+        <PlusCircle className="mr-2 size-4" />
         Add Task
       </Button>
     );

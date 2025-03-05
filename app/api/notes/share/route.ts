@@ -1,5 +1,5 @@
 import { auth } from '@/app/(auth)/auth';
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { generateShareLink, deactivateShareLink } from '@/lib/sharing/generate-link';
 import { z } from 'zod';
 

@@ -74,7 +74,7 @@ export function ShareModal({ noteId, className }: ShareModalProps) {
         className={cn("gap-2", className)}
         onClick={toggleModal}
       >
-        <Share2 className="h-4 w-4" />
+        <Share2 className="size-4" />
         Share
       </Button>
       
@@ -83,16 +83,17 @@ export function ShareModal({ noteId, className }: ShareModalProps) {
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium">Share Note</h3>
             <Button variant="ghost" size="icon" onClick={toggleModal}>
-              <X className="h-4 w-4" />
+              <X className="size-4" />
             </Button>
           </div>
           
           <div className="mt-4 space-y-4">
             {shareLink ? (
               <div className="space-y-2">
-                <label className="text-xs font-medium">Share link</label>
+                <label htmlFor="share-link" className="text-xs font-medium">Share link</label>
                 <div className="flex items-center gap-2">
                   <Input
+                    id="share-link"
                     value={shareLink}
                     readOnly
                     className="flex-1 text-xs"
@@ -103,9 +104,9 @@ export function ShareModal({ noteId, className }: ShareModalProps) {
                     variant="outline"
                   >
                     {isCopied ? (
-                      <Check className="h-4 w-4" />
+                      <Check className="size-4" />
                     ) : (
-                      <Copy className="h-4 w-4" />
+                      <Copy className="size-4" />
                     )}
                   </Button>
                 </div>

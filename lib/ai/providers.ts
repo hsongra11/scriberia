@@ -2,7 +2,6 @@ import { openai } from '@ai-sdk/openai';
 import { fireworks } from '@ai-sdk/fireworks';
 import { groq } from '@ai-sdk/groq';
 import { anthropic } from '@ai-sdk/anthropic';
-import { customProvider } from 'ai';
 
 // Define provider configuration types
 export interface ProviderConfig {

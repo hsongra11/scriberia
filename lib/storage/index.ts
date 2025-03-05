@@ -18,7 +18,7 @@ export async function uploadFile({
   try {
     // Generate a unique filename
     const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}/${path ? path + '/' : ''}${generateUUID()}.${fileExt}`;
+    const fileName = `${userId}/${path ? `${path}/` : ''}${generateUUID()}.${fileExt}`;
     
     // Upload the file
     const { data, error } = await supabaseClient.storage

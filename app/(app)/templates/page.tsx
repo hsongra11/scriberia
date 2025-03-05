@@ -113,13 +113,13 @@ export default async function TemplatesPage({ searchParams }: TemplatesPageProps
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="h-9" asChild>
             <Link href="/templates">
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className="mr-2 size-4" />
               Refresh
             </Link>
           </Button>
           <Button asChild>
             <Link href="/templates/new">
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Create Template
             </Link>
           </Button>

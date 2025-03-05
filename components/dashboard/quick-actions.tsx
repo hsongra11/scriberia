@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  Plus, 
   FileText, 
   ListTodo, 
   Mic, 
@@ -37,7 +36,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'new-note',
       name: 'Create Note',
       description: 'Start a new text note',
-      icon: <FileText className="h-5 w-5" />,
+      icon: <FileText className="size-5" />,
       action: () => {
         setIsCreating(true);
         fetch('/api/notes', {
@@ -64,7 +63,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'new-audio',
       name: 'Audio Note',
       description: 'Record an audio note',
-      icon: <Mic className="h-5 w-5" />,
+      icon: <Mic className="size-5" />,
       action: () => {
         setIsCreating(true);
         fetch('/api/notes', {
@@ -91,7 +90,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'new-task',
       name: 'Add Task',
       description: 'Create a new task',
-      icon: <ListTodo className="h-5 w-5" />,
+      icon: <ListTodo className="size-5" />,
       action: () => {
         router.push('/tasks/new');
       },
@@ -100,7 +99,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'my-recordings',
       name: 'My Recordings',
       description: 'View all audio notes',
-      icon: <FileAudio className="h-5 w-5" />,
+      icon: <FileAudio className="size-5" />,
       action: () => {
         router.push('/notes?filter=audio');
       },
@@ -109,7 +108,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'completed-tasks',
       name: 'Completed Tasks',
       description: 'View your achievements',
-      icon: <FileCheck className="h-5 w-5" />,
+      icon: <FileCheck className="size-5" />,
       action: () => {
         router.push('/tasks?filter=completed');
       },
@@ -118,7 +117,7 @@ export function QuickActions({ className }: QuickActionsProps) {
       id: 'more',
       name: 'More Options',
       description: 'View all actions',
-      icon: <MoreHorizontal className="h-5 w-5" />,
+      icon: <MoreHorizontal className="size-5" />,
       action: () => {
         router.push('/settings');
       },

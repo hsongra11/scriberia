@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -17,8 +17,7 @@ import { toast } from 'sonner';
 import { NoteAIActions } from './ai-actions';
 import { NoteAudio } from './note-audio';
 import { AudioTranscription } from '@/components/audio/audio-transcription';
-import { MoreVertical, Trash, Share2 } from 'lucide-react';
-import { ShareModal } from '@/components/notes/share-modal';
+import { MoreVertical, Trash, } from 'lucide-react';
 
 interface NoteActionsProps {
   note?: Note;
@@ -125,7 +124,7 @@ export function NoteActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <MoreVertical className="h-4 w-4" />
+            <MoreVertical className="size-4" />
             <span className="sr-only">More options</span>
           </Button>
         </DropdownMenuTrigger>
@@ -145,7 +144,7 @@ export function NoteActions({
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            <Trash className="mr-2 h-4 w-4" />
+            <Trash className="mr-2 size-4" />
             {isDeleting ? 'Deleting...' : 'Delete Note'}
           </DropdownMenuItem>
         </DropdownMenuContent>

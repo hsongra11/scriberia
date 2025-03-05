@@ -46,10 +46,10 @@ export function NoteSearch({ className }: NoteSearchProps) {
 
   return (
     <div className={`relative ${className}`}>
-      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
       <Input
         ref={inputRef}
-        className="pl-9 pr-9"
+        className="px-9"
         placeholder="Search notes..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -58,10 +58,10 @@ export function NoteSearch({ className }: NoteSearchProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-0 top-0 h-9 w-9"
+          className="absolute right-0 top-0 size-9"
           onClick={handleClear}
         >
-          <X className="h-4 w-4" />
+          <X className="size-4" />
           <span className="sr-only">Clear search</span>
         </Button>
       )}

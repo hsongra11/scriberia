@@ -17,7 +17,7 @@ export function Welcome({ onNext, currentStep, totalSteps }: WelcomeProps) {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="relative w-16 h-16">
+          <div className="relative size-16">
             <Image
               src="/logo.png"
               alt="HyperScribe Logo"
@@ -30,13 +30,13 @@ export function Welcome({ onNext, currentStep, totalSteps }: WelcomeProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-center text-muted-foreground">
-          Your AI-powered note-taking and task management app. Let's set up your
+          Your AI-powered note-taking and task management app. Let&apos;s set up your
           account to get started.
         </p>
         
         <div className="grid grid-cols-1 gap-4 mt-6">
           <div className="flex items-center gap-3 p-3 rounded-lg border">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="shrink-0 size-10 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-medium">1</span>
             </div>
             <div>
@@ -48,7 +48,7 @@ export function Welcome({ onNext, currentStep, totalSteps }: WelcomeProps) {
           </div>
           
           <div className="flex items-center gap-3 p-3 rounded-lg border">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="shrink-0 size-10 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-medium">2</span>
             </div>
             <div>
@@ -60,7 +60,7 @@ export function Welcome({ onNext, currentStep, totalSteps }: WelcomeProps) {
           </div>
           
           <div className="flex items-center gap-3 p-3 rounded-lg border">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="shrink-0 size-10 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-medium">3</span>
             </div>
             <div>

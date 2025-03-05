@@ -3,10 +3,6 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 import { createStorageBuckets } from '@/lib/storage';
-import * as schema from './schema';
-import { eq } from 'drizzle-orm';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 config({
   path: '.env.local',

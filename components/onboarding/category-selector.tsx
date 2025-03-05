@@ -80,7 +80,7 @@ export function CategorySelector({ onNext, onBack, currentStep, totalSteps }: Ca
       <CardHeader>
         <CardTitle className="text-xl text-center">Choose Your Note Categories</CardTitle>
         <p className="text-center text-muted-foreground">
-          Select the types of notes you'll be creating most often
+          Select the types of notes you&apos;ll be creating most often
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -92,6 +92,8 @@ export function CategorySelector({ onNext, onBack, currentStep, totalSteps }: Ca
             return (
               <div
                 key={category.id}
+                role="button"
+                tabIndex={0}
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
                   isSelected 
@@ -99,22 +101,27 @@ export function CategorySelector({ onNext, onBack, currentStep, totalSteps }: Ca
                     : "hover:bg-muted"
                 )}
                 onClick={() => toggleCategory(category.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    toggleCategory(category.id);
+                  }
+                }}
               >
                 <div className={cn(
-                  "flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
+                  "shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
                   isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="size-5" />
                 </div>
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="font-medium">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {category.description}
                   </p>
                 </div>
                 {isSelected && (
-                  <div className="flex-shrink-0 text-primary">
-                    <Check className="h-5 w-5" />
+                  <div className="shrink-0 text-primary">
+                    <Check className="size-5" />
                   </div>
                 )}
               </div>

@@ -5,9 +5,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Plus, X } from 'lucide-react';
+import { CalendarIcon, } from 'lucide-react';
 import { format } from 'date-fns';
-import { Task } from '@/lib/db/schema';
 import { cn } from '@/lib/utils';
 
 interface TaskCreatorProps {
@@ -63,7 +62,7 @@ export function TaskCreator({ noteId, onCreateTask, className = '' }: TaskCreato
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" size="icon">
-              <CalendarIcon className="h-4 w-4" />
+              <CalendarIcon className="size-4" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">

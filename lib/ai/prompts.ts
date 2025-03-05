@@ -1,5 +1,5 @@
-import { ArtifactKind } from '@/components/artifact';
-import { TemplateCategory } from '../templates/default-templates';
+import type { ArtifactKind } from '@/components/artifact';
+import type { TemplateCategory } from '../templates/default-templates';
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -87,11 +87,11 @@ export const systemPrompt = ({
   
   // Add template-specific instructions if a template category is provided
   if (templateCategory && templatePrompts[templateCategory]) {
-    prompt += '\n\n' + templatePrompts[templateCategory];
+    prompt += `\n\n${templatePrompts[templateCategory]}`;
   }
   
   // Add artifacts capability if not a reasoning model
-  prompt += '\n\n' + artifactsPrompt;
+  prompt += `\n\n${artifactsPrompt}`;
   
   return prompt;
 };

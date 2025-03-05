@@ -5,7 +5,7 @@ import { NoteContainer } from '@/components/notes/note-container';
 import { NoteHeader } from '@/components/notes/note-header';
 import { NoteContent } from '@/components/notes/note-content';
 import { NoteActions } from '@/components/notes/note-actions';
-import { Template, Note } from '@/lib/db/schema';
+import type { Template, Note } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
@@ -56,7 +56,7 @@ export function BrainDump({
           >
             <span className="mr-1">{section.icon}</span>
             <span>{section.label}</span>
-            <Plus className="w-3 h-3 ml-1" />
+            <Plus className="size-3 ml-1" />
           </Button>
         ))}
       </div>

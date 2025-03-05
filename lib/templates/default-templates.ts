@@ -1,4 +1,4 @@
-import { Template } from '@/lib/db/schema';
+import type { Template } from '@/lib/db/schema';
 
 // Default template categories
 export type TemplateCategory = 'brain-dump' | 'journal' | 'to-do' | 'mood-tracking' | 'custom';

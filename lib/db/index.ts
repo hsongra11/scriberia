@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
 // Setup client
-let client;
+let client: ReturnType<typeof postgres> | undefined;
 if (process.env.POSTGRES_URL) {
   client = postgres(process.env.POSTGRES_URL, { max: 1 });
 } else {

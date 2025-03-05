@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { NoteContainer } from '@/components/notes/note-container';
-import { Template, Note } from '@/lib/db/schema';
+import type { Template, Note } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 
 interface MoodTrackingProps {
@@ -69,7 +69,7 @@ export function MoodTracking({
         <div className="flex-1 p-4 overflow-auto">
           {isEditing ? (
             <textarea
-              className="w-full h-full min-h-[300px] bg-transparent resize-none focus:outline-none"
+              className="size-full min-h-[300px] bg-transparent resize-none focus:outline-none"
               value={note?.content || template.content}
               onChange={(e) => onUpdate?.({ content: e.target.value })}
               placeholder="Start tracking your mood..."

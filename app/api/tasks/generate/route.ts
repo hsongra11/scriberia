@@ -1,9 +1,8 @@
 import { auth } from '@/app/(auth)/auth';
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { task as taskTable } from '@/lib/db/schema';
 import { generateTasksFromNote, formatTasksForCreation, validateAndFormatTasks } from '@/lib/ai/task-generator';
-import { streamText } from 'ai';
 import { z } from 'zod';
 
 const requestSchema = z.object({

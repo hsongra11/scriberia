@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Task } from '@/lib/db/schema';
+import type { Task } from '@/lib/db/schema';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Plus, CheckCircle2 } from 'lucide-react';
@@ -80,10 +80,10 @@ export function DailyTasks({ className, limit = 5 }: DailyTasksProps) {
   return (
     <Card className={cn('h-full', className)}>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Today's Tasks</CardTitle>
+        <CardTitle>Today&apos;s Tasks</CardTitle>
         <Link href="/tasks">
           <Button variant="ghost" size="sm" className="ml-auto gap-1">
-            View All <ArrowRight className="h-4 w-4" />
+            View All <ArrowRight className="size-4" />
           </Button>
         </Link>
       </CardHeader>
@@ -92,7 +92,7 @@ export function DailyTasks({ className, limit = 5 }: DailyTasksProps) {
           <div className="space-y-2">
             {Array.from({ length: limit }).map((_, i) => (
               <div 
-                key={i} 
+                key={`loading-task-${i}`} 
                 className="h-12 rounded-md bg-muted animate-pulse"
               />
             ))}
@@ -135,12 +135,12 @@ export function DailyTasks({ className, limit = 5 }: DailyTasksProps) {
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="mb-4 rounded-full bg-green-100 p-3 text-green-600 dark:bg-green-900/20 dark:text-green-400">
-              <CheckCircle2 className="h-6 w-6" />
+              <CheckCircle2 className="size-6" />
             </div>
             <p className="mb-2 text-muted-foreground">All tasks complete for today!</p>
             <Link href="/tasks/new">
               <Button size="sm" className="gap-1">
-                <Plus className="h-4 w-4" /> Add New Task
+                <Plus className="size-4" /> Add New Task
               </Button>
             </Link>
           </div>

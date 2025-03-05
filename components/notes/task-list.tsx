@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  CheckCircle2,
-  Circle,
   Trash2,
   Edit,
   MoreHorizontal,
@@ -14,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Task } from "@/lib/db/schema";
+import type { Task } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
 export interface TaskListProps {
@@ -86,15 +84,15 @@ export function TaskList({
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-7 w-7">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button size="icon" variant="ghost" className="size-7">
+                  <MoreHorizontal className="size-4" />
                   <span className="sr-only">Task actions</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {onEdit && (
                   <DropdownMenuItem onClick={() => onEdit(task.id)}>
-                    <Edit className="mr-2 h-4 w-4" />
+                    <Edit className="mr-2 size-4" />
                     Edit
                   </DropdownMenuItem>
                 )}
@@ -103,7 +101,7 @@ export function TaskList({
                     onClick={() => onDelete(task.id)}
                     className="text-destructive focus:text-destructive"
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-2 size-4" />
                     Delete
                   </DropdownMenuItem>
                 )}

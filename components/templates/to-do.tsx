@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { NoteContainer } from '@/components/notes/note-container';
-import { Template, Note } from '@/lib/db/schema';
+import type { Template, Note } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CheckCircle, Circle, Plus, Trash2 } from 'lucide-react';
@@ -157,7 +157,7 @@ export function ToDo({
           {groupTasks.map((task, idx) => {
             const taskIndex = tasks.indexOf(task);
             return (
-              <li key={`${title}-${idx}`} className="flex items-center gap-2">
+              <li key={`${title}-${idx}-${task.content.substring(0, 10)}`} className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => handleTaskToggle(taskIndex)}
@@ -173,7 +173,7 @@ export function ToDo({
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDeleteTask(taskIndex)}
-                    className="ml-auto h-8 w-8"
+                    className="ml-auto size-8"
                   >
                     <Trash2 size={16} />
                   </Button>

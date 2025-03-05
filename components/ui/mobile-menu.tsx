@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -60,7 +62,7 @@ export function MobileMenu() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild className="md:hidden">
         <Button variant="ghost" size="icon">
-          <Menu className="h-6 w-6" />
+          <Menu className="size-6" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
@@ -69,7 +71,7 @@ export function MobileMenu() {
           <div className="flex items-center justify-between p-4 border-b">
             <p className="font-semibold text-lg">HyperScribe</p>
             <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
-              <X className="h-5 w-5" />
+              <X className="size-5" />
             </Button>
           </div>
           <nav className="flex flex-col gap-1 p-2">
@@ -89,7 +91,7 @@ export function MobileMenu() {
                       : "hover:bg-muted"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="size-5" />
                   {item.label}
                 </Link>
               );

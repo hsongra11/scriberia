@@ -105,7 +105,7 @@ export function StepProgress({
       <div className="flex justify-between">
         {steps.map((step, index) => (
           <div
-            key={index}
+            key={`step-${index}-${step.substring(0, 5)}`}
             className={cn(
               "flex flex-col items-center space-y-2",
               index === currentStep

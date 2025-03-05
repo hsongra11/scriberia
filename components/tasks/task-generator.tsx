@@ -3,9 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useChat } from 'ai/react';
 import { Loader2, ListTodo, Wand2 } from 'lucide-react';
-import { Task } from './task-item';
 import { cn } from '@/lib/utils';
 import {
   Card,
@@ -15,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { TaskItem } from './task-item';
+import type { Task } from './task-item';
 
 interface TaskGeneratorProps {
   noteId?: string;
@@ -84,7 +82,7 @@ export function TaskGenerator({ noteId, onAddTasks, className }: TaskGeneratorPr
     <Card className={cn("w-full", className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wand2 className="h-5 w-5" />
+          <Wand2 className="size-5" />
           Generate Tasks
         </CardTitle>
         <CardDescription>
@@ -107,14 +105,14 @@ export function TaskGenerator({ noteId, onAddTasks, className }: TaskGeneratorPr
         {extractedTasks.length > 0 && (
           <div className="space-y-2 border rounded-md p-3">
             <div className="text-sm font-medium flex items-center gap-2 mb-2">
-              <ListTodo className="h-4 w-4" />
+              <ListTodo className="size-4" />
               Extracted Tasks ({extractedTasks.length})
             </div>
             
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {extractedTasks.map((task, index) => (
                 <div 
-                  key={index} 
+                  key={`generated-task-${index}`} 
                   className="flex items-start gap-2 p-2 border rounded-md"
                 >
                   <div className="w-full">
@@ -165,7 +163,7 @@ export function TaskGenerator({ noteId, onAddTasks, className }: TaskGeneratorPr
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Generating...
                 </>
               ) : (

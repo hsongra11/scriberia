@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TaskItem, Task } from "./task-item";
+import { TaskItem, type Task } from "./task-item";
 import { cn } from "@/lib/utils";
 import { TaskCreator } from "./task-creator";
 

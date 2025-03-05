@@ -3,7 +3,6 @@ import NextAuth, { type User, type Session } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 import { getUser } from '@/lib/db/queries';
-import { supabaseClient } from '@/lib/storage/config';
 
 import { authConfig } from './auth.config';
 

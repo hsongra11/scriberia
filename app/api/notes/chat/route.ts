@@ -1,14 +1,14 @@
-import { Message } from 'ai';
+import type { Message } from 'ai';
 import { NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 import { myProvider } from '@/lib/ai/models';
 import { systemPrompt } from '@/lib/ai/prompts';
 import { getMostRecentUserMessage, sanitizeResponseMessages } from '@/lib/utils';
 import { getTemplateById } from '@/lib/templates';
-import { TemplateCategory } from '@/lib/templates/default-templates';
+import type { TemplateCategory } from '@/lib/templates/default-templates';
 import { db } from '@/lib/db';
-import { eq } from 'drizzle-orm';
-import { Note } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { note } from '@/lib/db/schema';
 
 export const maxDuration = 60;
 
@@ -49,14 +49,20 @@ export async function POST(request: Request) {
 
     // If there's a noteId, get the current note to provide context
     let noteContext = '';
-    if (noteId && noteId !== 'new-note') {
+    if (noteId && noteId !== 'new-note' && db) {
       try {
-        const note = await db.query.Note.findFirst({
-          where: eq(Note.id, noteId),
-        });
+        const [noteData] = await db
+          .select()
+          .from(note)
+          .where(
+            and(
+              eq(note.id, noteId),
+              eq(note.userId, session.user.id)
+            )
+          );
         
-        if (note && note.content) {
-          noteContext = `CURRENT NOTE CONTENT:\n${note.content}\n\n`;
+        if (noteData?.content) {
+          noteContext = `CURRENT NOTE CONTENT:\n${noteData.content}\n\n`;
         }
       } catch (error) {
         console.error('Error fetching note:', error);
@@ -79,12 +85,14 @@ export async function POST(request: Request) {
     const model = myProvider.languageModel(selectedChatModel);
     
     // Generate response
-    const response = await model.invoke(aiMessages);
+    const response = await model.generate({
+      messages: aiMessages
+    });
     
     // Return response
     return NextResponse.json({ 
       role: 'assistant',
-      content: response,
+      content: response.content,
       id: Date.now().toString(),
     });
   } catch (error) {

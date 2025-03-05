@@ -1,5 +1,5 @@
 import { expandNotePrompt } from '../prompts';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -13,7 +13,7 @@ const openai = new OpenAI({
  * @param modelId The AI model to use for expansion (optional)
  * @returns A promise resolving to the expanded content
  */
-export async function expandNote(content: string, modelId: string = 'openai-large'): Promise<string> {
+export async function expandNote(content: string, modelId = 'openai-large'): Promise<string> {
   try {
     if (!content || content.trim().length === 0) {
       return 'Cannot expand empty content';

@@ -1,8 +1,8 @@
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { template, Template, note } from '@/lib/db/schema';
-import { DEFAULT_TEMPLATES, processTemplateContent, TemplateCategory } from './default-templates';
-import { randomUUID } from 'crypto';
+import { template, type Template, note } from '@/lib/db/schema';
+import { DEFAULT_TEMPLATES, processTemplateContent, type TemplateCategory } from './default-templates';
+import { randomUUID } from 'node:crypto';
 
 // Get templates for a user including default templates
 export async function getUserTemplates(userId: string): Promise<Template[]> {

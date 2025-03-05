@@ -84,7 +84,7 @@ export function AudioTranscription({ onSave, className = '' }: AudioTranscriptio
           className={className}
           title="Transcribe audio"
         >
-          <Mic className="h-4 w-4 mr-2" />
+          <Mic className="size-4 mr-2" />
           Record & Transcribe
         </Button>
       </AlertDialogTrigger>
@@ -96,9 +96,9 @@ export function AudioTranscription({ onSave, className = '' }: AudioTranscriptio
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(false)}
-              className="h-6 w-6"
+              className="size-6"
             >
-              <X className="h-4 w-4" />
+              <X className="size-4" />
             </Button>
           </AlertDialogTitle>
         </AlertDialogHeader>
@@ -116,7 +116,7 @@ export function AudioTranscription({ onSave, className = '' }: AudioTranscriptio
                 <div className="text-sm font-medium">Transcription</div>
                 {isTranscribing ? (
                   <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    <Loader2 className="size-6 animate-spin mr-2" />
                     <span>Transcribing audio...</span>
                   </div>
                 ) : (
@@ -134,7 +134,7 @@ export function AudioTranscription({ onSave, className = '' }: AudioTranscriptio
                   Record Again
                 </Button>
                 <Button onClick={handleSaveTranscription} disabled={!transcription || isTranscribing}>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="size-4 mr-2" />
                   Save Transcription
                 </Button>
               </div>

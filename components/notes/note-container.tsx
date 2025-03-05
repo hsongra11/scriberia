@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 
 interface NoteContainerProps {
   children: React.ReactNode;

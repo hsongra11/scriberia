@@ -7,7 +7,6 @@ import {
 } from 'ai';
 import { 
   initializeProviders, 
-  getProviderAndModel, 
   providers 
 } from './providers';
 

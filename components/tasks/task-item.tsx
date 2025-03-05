@@ -120,7 +120,7 @@ export function TaskItem({ task, onUpdate, onDelete, className }: TaskItemProps)
         
         {task.dueDate && (
           <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-            <Calendar className="h-3 w-3" />
+            <Calendar className="size-3" />
             <span>Due: {format(task.dueDate, "PPP")}</span>
           </div>
         )}
@@ -135,33 +135,33 @@ export function TaskItem({ task, onUpdate, onDelete, className }: TaskItemProps)
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 opacity-0 group-hover:opacity-100"
+            className="size-6 opacity-0 group-hover:opacity-100"
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setIsEditing(true)}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit className="size-4 mr-2" />
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleChangePriority(1)}>
-            <span className="h-2 w-2 rounded-full bg-blue-500 mr-2" />
+            <span className="size-2 rounded-full bg-blue-500 mr-2" />
             Set Low Priority
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleChangePriority(2)}>
-            <span className="h-2 w-2 rounded-full bg-yellow-500 mr-2" />
+            <span className="size-2 rounded-full bg-yellow-500 mr-2" />
             Set Medium Priority
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleChangePriority(3)}>
-            <span className="h-2 w-2 rounded-full bg-red-500 mr-2" />
+            <span className="size-2 rounded-full bg-red-500 mr-2" />
             Set High Priority
           </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={onDelete}
             className="text-destructive focus:text-destructive"
           >
-            <Trash className="h-4 w-4 mr-2" />
+            <Trash className="size-4 mr-2" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -2,13 +2,10 @@
 
 import { useState } from 'react';
 import { useChat } from 'ai/react';
-import { Attachment, Message } from 'ai';
-import { Note, Template } from '@/lib/db/schema';
+import type { Attachment, } from 'ai';
+import type { Note, Template } from '@/lib/db/schema';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
-import { TemplateCategory } from '@/lib/templates/default-templates';
-
-import { NoteContainer } from './note-container';
-import { NoteHeader } from './note-header';
+import type { TemplateCategory } from '@/lib/templates/default-templates';
 import { MultimodalInput } from '@/components/multimodal-input';
 import { Messages } from '@/components/messages';
 import { Button } from '@/components/ui/button';
@@ -93,13 +90,13 @@ export function NoteChat({ note, template, onUpdate, className }: NoteChatProps)
       <Button
         variant="ghost"
         size="icon"
-        className="fixed bottom-4 right-4 z-10 rounded-full w-12 h-12 shadow-md"
+        className="fixed bottom-4 right-4 z-10 rounded-full size-12 shadow-md"
         onClick={toggleChat}
       >
         {isChatVisible ? (
-          <X className="w-5 h-5" />
+          <X className="size-5" />
         ) : (
-          <MessageSquare className="w-5 h-5" />
+          <MessageSquare className="size-5" />
         )}
       </Button>
 
@@ -109,7 +106,7 @@ export function NoteChat({ note, template, onUpdate, className }: NoteChatProps)
           <div className="p-3 border-b flex justify-between items-center">
             <h3 className="font-medium">Note Assistant</h3>
             <Button variant="ghost" size="icon" onClick={toggleChat}>
-              <X className="w-4 h-4" />
+              <X className="size-4" />
             </Button>
           </div>
           

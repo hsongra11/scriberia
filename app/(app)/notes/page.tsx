@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '../../(auth)/auth';
 import { NotesList } from '@/components/notes/notes-list';
@@ -37,7 +37,7 @@ export default async function NotesPage({
         </div>
         <Button className="gap-1 sm:self-end" asChild>
           <a href="/notes/new">
-            <Plus className="h-4 w-4" /> New Note
+            <Plus className="size-4" /> New Note
           </a>
         </Button>
       </div>

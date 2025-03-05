@@ -2,10 +2,7 @@
 
 import React from 'react';
 import { NoteContainer } from '@/components/notes/note-container';
-import { NoteHeader } from '@/components/notes/note-header';
-import { NoteContent } from '@/components/notes/note-content';
-import { NoteActions } from '@/components/notes/note-actions';
-import { Template, Note } from '@/lib/db/schema';
+import type { Template, Note } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 
 interface JournalProps {
@@ -54,14 +51,14 @@ export function Journal({
         
         {isEditing && (
           <div className="px-4 py-2 bg-muted/30 border-b flex items-center">
-            <span className="text-sm text-muted-foreground mr-3">Today's Mood:</span>
+            <span className="text-sm text-muted-foreground mr-3">Today&apos;s Mood:</span>
             <div className="flex space-x-1">
               {moodOptions.map((mood) => (
                 <Button
                   key={mood.label}
                   variant="ghost"
                   size="sm"
-                  className="w-8 h-8 p-0 rounded-full"
+                  className="size-8 p-0 rounded-full"
                   onClick={() => handleMoodSelect(mood.label)}
                   title={mood.label}
                 >
@@ -75,7 +72,7 @@ export function Journal({
         <div className="flex-1 p-4 overflow-auto">
           {isEditing ? (
             <textarea
-              className="w-full h-full min-h-[300px] bg-transparent resize-none focus:outline-none"
+              className="size-full min-h-[300px] bg-transparent resize-none focus:outline-none"
               value={note?.content || template.content}
               onChange={(e) => onUpdate?.({ content: e.target.value })}
               placeholder="Start writing your journal entry..."

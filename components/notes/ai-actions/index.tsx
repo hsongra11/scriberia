@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Expand, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Note } from '@/lib/db/schema';
+import type { Note } from '@/lib/db/schema';
 
 interface NoteAIActionsProps {
   note?: Note;
@@ -94,9 +94,9 @@ export function NoteAIActions({ note, onUpdate, className }: NoteAIActionsProps)
         title="Summarize note content"
       >
         {isSummarizing ? (
-          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          <Loader2 className="size-4 animate-spin mr-2" />
         ) : (
-          <Sparkles className="h-4 w-4 mr-2" />
+          <Sparkles className="size-4 mr-2" />
         )}
         Summarize
       </Button>
@@ -109,9 +109,9 @@ export function NoteAIActions({ note, onUpdate, className }: NoteAIActionsProps)
         title="Expand note with more details"
       >
         {isExpanding ? (
-          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          <Loader2 className="size-4 animate-spin mr-2" />
         ) : (
-          <Expand className="h-4 w-4 mr-2" />
+          <Expand className="size-4 mr-2" />
         )}
         Expand
       </Button>

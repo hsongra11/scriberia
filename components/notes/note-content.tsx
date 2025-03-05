@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Note, Task } from "@/lib/db/schema";
+import type { Note, Task } from "@/lib/db/schema";
 import { TaskList } from "@/components/notes/task-list";
 import { TaskCreator } from "@/components/notes/task-creator";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,7 @@ export function NoteContent({
               onClick={() => setShowTasks(!showTasks)}
               className="mb-2"
             >
-              <ListChecks className="mr-2 h-4 w-4" />
+              <ListChecks className="mr-2 size-4" />
               {showTasks ? "Hide Tasks" : "Show Tasks"}
             </Button>
             
@@ -115,7 +115,7 @@ export function NoteContent({
                 onClick={() => setShowTasks(!showTasks)}
                 className="mb-2"
               >
-                <ListChecks className="mr-2 h-4 w-4" />
+                <ListChecks className="mr-2 size-4" />
                 {showTasks ? "Hide Tasks" : `Show Tasks (${tasks.length})`}
               </Button>
               

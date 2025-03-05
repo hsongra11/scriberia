@@ -2,11 +2,8 @@ import { config } from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
-import path from 'path';
-import fs from 'fs';
-import { promisify } from 'util';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path from 'node:path';
+import fs from 'node:fs';
 import { runTests } from '../lib/db/tests/schema.test';
 
 // Load environment variables first - use .env.local for local development

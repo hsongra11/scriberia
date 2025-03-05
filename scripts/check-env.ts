@@ -7,8 +7,8 @@
  */
 
 import { config } from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 // Load environment variables
 const result = config({
