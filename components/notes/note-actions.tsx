@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Note } from '@/lib/db/schema';
 import { 
@@ -17,6 +17,8 @@ import { toast } from 'sonner';
 import { NoteAIActions } from './ai-actions';
 import { NoteAudio } from './note-audio';
 import { AudioTranscription } from '@/components/audio/audio-transcription';
+import { MoreVertical, Trash, Share2 } from 'lucide-react';
+import { ShareModal } from '@/components/notes/share-modal';
 
 interface NoteActionsProps {
   note?: Note;
@@ -38,28 +40,32 @@ export function NoteActions({
   className,
 }: NoteActionsProps) {
   const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = () => {
-    if (!note) return;
+  const handleDelete = async () => {
+    if (!note?.id) return;
     
-    if (onDelete) {
-      onDelete();
-    } else {
-      // Default delete behavior
-      toast.promise(
-        new Promise((resolve) => {
-          // Simulating delete API call
-          setTimeout(resolve, 1000);
-        }),
-        {
-          loading: 'Deleting note...',
-          success: () => {
-            router.push('/notes');
-            return 'Note deleted successfully';
-          },
-          error: 'Failed to delete note',
-        }
-      );
+    setIsDeleting(true);
+    
+    try {
+      const response = await fetch(`/api/notes/${note.id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete note');
+      }
+      
+      if (onDelete) {
+        onDelete();
+      } else {
+        router.push('/');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -119,21 +125,8 @@ export function NoteActions({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="19" cy="12" r="1" />
-              <circle cx="5" cy="12" r="1" />
-            </svg>
-            <span className="sr-only">More</span>
+            <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">More options</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -148,10 +141,12 @@ export function NoteActions({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
             onClick={handleDelete}
-            className="text-red-600 focus:text-red-600"
+            disabled={isDeleting}
           >
-            Delete
+            <Trash className="mr-2 h-4 w-4" />
+            {isDeleting ? 'Deleting...' : 'Delete Note'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

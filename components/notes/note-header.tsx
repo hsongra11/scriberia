@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { ChevronLeft, Save, Edit } from 'lucide-react';
+import { NoteAudio } from './note-audio';
+import { ShareModal } from './share-modal';
 
 interface NoteHeaderProps {
   note?: Note;
@@ -20,6 +23,7 @@ interface NoteHeaderProps {
   className?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  onContentChange?: (content: string) => void;
 }
 
 export function NoteHeader({
@@ -33,6 +37,7 @@ export function NoteHeader({
   className,
   createdAt,
   updatedAt,
+  onContentChange,
 }: NoteHeaderProps) {
   const router = useRouter();
   const [localTitle, setLocalTitle] = useState(title);
@@ -79,6 +84,21 @@ export function NoteHeader({
         </div>
         
         <div className="flex items-center gap-2">
+          {isEditing && onContentChange && (
+            <NoteAudio
+              note={note}
+              onUpdate={(transcription) => {
+                if (onContentChange && transcription) {
+                  onContentChange(transcription);
+                }
+              }}
+            />
+          )}
+          
+          {!isEditing && note?.id && (
+            <ShareModal noteId={note.id} />
+          )}
+          
           {isEditing ? (
             <Button 
               variant="default" 
@@ -86,6 +106,7 @@ export function NoteHeader({
               onClick={onSave}
               className="h-8"
             >
+              <Save className="mr-2 h-4 w-4" />
               Save
             </Button>
           ) : (
@@ -95,6 +116,7 @@ export function NoteHeader({
               onClick={onEdit}
               className="h-8"
             >
+              <Edit className="mr-2 h-4 w-4" />
               Edit
             </Button>
           )}

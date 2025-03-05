@@ -159,7 +159,7 @@ This implementation plan outlines the steps to transform the existing AI chatbot
   - **Step Dependencies**: Step 2, Step 6
   - **User Instructions**: None
 
-- [ ] Step 15: Implement Task Auto-Generation
+- [x] Step 15: Implement Task Auto-Generation
   - **Task**: Add functionality to auto-generate tasks from conversation context
   - **Files**:
     - `lib/ai/task-generator.ts`: Create task generation utility
@@ -170,12 +170,12 @@ This implementation plan outlines the steps to transform the existing AI chatbot
 
 ## Note Sharing
 
-- [ ] Step 16: Implement Note Sharing System
+- [x] Step 16: Implement Note Sharing System
   - **Task**: Create functionality to share notes via links
   - **Files**:
     - `lib/sharing/generate-link.ts`: Create utility for generating share links
     - `components/notes/share-modal.tsx`: Create sharing modal
-    - `app/shared/[id]/page.tsx`: Create page for viewing shared notes
+    - `app/shared/[token]/page.tsx`: Create page for viewing shared notes
     - `app/api/notes/share/route.ts`: Create API route for sharing
   - **Step Dependencies**: Step 6
   - **User Instructions**: None
