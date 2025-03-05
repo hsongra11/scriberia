@@ -51,8 +51,14 @@ export async function POST(request: Request) {
   const chat = await getChatById({ id });
 
   if (!chat) {
-    const title = await generateTitleFromUserMessage({ message: userMessage });
-    await saveChat({ id, userId: session.user.id, title });
+    try {
+      const title = await generateTitleFromUserMessage({ message: userMessage });
+      await saveChat({ id, userId: session.user.id, title });
+    } catch (error) {
+      console.error("Error generating title:", error);
+      // Use a default title if title generation fails
+      await saveChat({ id, userId: session.user.id, title: "New Chat" });
+    }
   }
 
   await saveMessages({
@@ -122,8 +128,9 @@ export async function POST(request: Request) {
         sendReasoning: true,
       });
     },
-    onError: () => {
-      return 'Oops, an error occured!';
+    onError: (error) => {
+      console.error("Chat API error:", error);
+      return 'An error occurred, please try again!';
     },
   });
 }

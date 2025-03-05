@@ -52,7 +52,8 @@ export function Chat({
       mutate('/api/history');
     },
     onError: (error) => {
-      toast.error('An error occured, please try again!');
+      console.error("Chat error encountered:", error);
+      toast.error('An error occurred, please try again!');
     },
   });
 

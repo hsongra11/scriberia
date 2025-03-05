@@ -118,18 +118,23 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
+    try {
+      window.history.replaceState({}, '', `/chat/${chatId}`);
 
-    handleSubmit(undefined, {
-      experimental_attachments: attachments,
-    });
+      handleSubmit(undefined, {
+        experimental_attachments: attachments,
+      });
 
-    setAttachments([]);
-    setLocalStorageInput('');
-    resetHeight();
+      setAttachments([]);
+      setLocalStorageInput('');
+      resetHeight();
 
-    if (width && width > 768) {
-      textareaRef.current?.focus();
+      if (width && width > 768) {
+        textareaRef.current?.focus();
+      }
+    } catch (error) {
+      console.error("Error submitting chat form:", error);
+      toast.error('An error occurred during submission, please try again!');
     }
   }, [
     attachments,
@@ -138,6 +143,7 @@ function PureMultimodalInput({
     setLocalStorageInput,
     width,
     chatId,
+    resetHeight,
   ]);
 
   const uploadFile = async (file: File) => {
