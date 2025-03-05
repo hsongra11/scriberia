@@ -3,6 +3,15 @@ import { auth } from '@/app/(auth)/auth';
 import { db } from '@/lib/db';
 import { note, attachment } from '@/lib/db/schema';
 import { desc, eq, and, like, or, count, sql, inArray, SQL } from 'drizzle-orm';
+import { z } from 'zod';
+
+// Validation schema for creating a new note
+const createNoteSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100),
+  content: z.string().default(""),
+  category: z.enum(["custom", "brain-dump", "journal", "to-do", "mood-tracking"]),
+  templateId: z.string().uuid().optional(),
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -185,35 +194,49 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const body = await req.json();
-    const { title, content, category, templateId } = body;
-
     if (!db) {
-      throw new Error("Database connection not available");
+      return NextResponse.json(
+        { error: "Database connection not available" },
+        { status: 500 }
+      );
     }
+
+    // Parse and validate request body
+    const body = await req.json();
+    const validationResult = createNoteSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Invalid note data", details: validationResult.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { title, content, category, templateId } = validationResult.data;
     
     const [newNote] = await db
       .insert(note)
       .values({
-        title: title || 'Untitled Note',
-        content: content || '',
-        category: (category as any) || 'custom',
+        title,
+        content,
+        category,
         userId: session.user.id,
         templateId: templateId || null,
         createdAt: new Date(),
         lastEditedAt: new Date(),
+        isArchived: false,
         isDeleted: false,
-      } as any)
+      })
       .returning();
 
-    return NextResponse.json({ note: newNote });
+    return NextResponse.json({ note: newNote }, { status: 201 });
   } catch (error) {
     console.error('Error creating note:', error);
     return NextResponse.json(

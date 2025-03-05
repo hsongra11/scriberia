@@ -1,112 +1,181 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Template } from "@/lib/db/schema";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, PlusCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, Edit, Copy, Trash, Plus, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface TemplateListProps {
   templates: Template[];
-  onDelete: (id: string) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
+  onDuplicate?: (id: string) => Promise<void>;
 }
 
-export function TemplateList({ templates, onDelete }: TemplateListProps) {
+export function TemplateList({ templates, onDelete, onDuplicate }: TemplateListProps) {
   const router = useRouter();
-  const [deleting, setDeleting] = useState<string | null>(null);
-
-  const handleDelete = async (id: string) => {
-    try {
-      setDeleting(id);
-      await onDelete(id);
-      toast.success("Template deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete template");
-      console.error(error);
-    } finally {
-      setDeleting(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+  
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "brain-dump":
+        return "bg-yellow-500 hover:bg-yellow-600";
+      case "journal":
+        return "bg-blue-500 hover:bg-blue-600";
+      case "to-do":
+        return "bg-green-500 hover:bg-green-600";
+      case "mood-tracking":
+        return "bg-purple-500 hover:bg-purple-600";
+      default:
+        return "bg-slate-500 hover:bg-slate-600";
     }
   };
-
-  const handleEdit = (id: string) => {
-    router.push(`/templates/${id}/edit`);
+  
+  const formatCategory = (category: string) => {
+    return category
+      .split("-")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
-
-  const handleCreate = () => {
-    router.push("/templates/new");
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Templates</h2>
-        <Button onClick={handleCreate}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create Template
+  
+  if (templates.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <FileText className="h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-semibold mb-2">No Templates</h3>
+        <p className="text-muted-foreground mb-6">
+          You haven&apos;t created any templates yet.
+        </p>
+        <Button asChild>
+          <Link href="/templates/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Create New Template
+          </Link>
         </Button>
       </div>
-
-      {templates.length === 0 ? (
-        <div className="bg-muted/50 rounded-lg p-8 text-center">
-          <h3 className="font-medium text-lg mb-2">No templates yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Create custom templates for your notes to speed up your workflow.
-          </p>
-          <Button onClick={handleCreate}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create Your First Template
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {templates.map((template) => (
-            <Card key={template.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-start">
-                  <span>{template.name}</span>
-                  <Badge variant={template.isDefault ? "default" : "outline"}>
-                    {template.isDefault ? "Default" : "Custom"}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-muted-foreground line-clamp-3">{template.description}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(template.id)}
-                  disabled={deleting === template.id}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(template.id)}
-                  disabled={deleting === template.id || template.isDefault}
-                >
-                  {deleting === template.id ? (
-                    <>
-                      <span className="mr-2">Deleting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </>
+    );
+  }
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {templates.map((template) => (
+        <Card key={template.id} className="flex flex-col">
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-start">
+              <Badge 
+                className={cn(
+                  "mb-2",
+                  getCategoryColor(template.category)
+                )}
+              >
+                {formatCategory(template.category)}
+              </Badge>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Actions</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => router.push(`/templates/${template.id}/edit`)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  {onDuplicate && (
+                    <DropdownMenuItem 
+                      onClick={async () => {
+                        try {
+                          await onDuplicate(template.id);
+                          toast.success("Template duplicated");
+                        } catch (error) {
+                          toast.error("Failed to duplicate template");
+                        }
+                      }}
+                    >
+                      <Copy className="mr-2 h-4 w-4" />
+                      Duplicate
+                    </DropdownMenuItem>
                   )}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
+                  {!template.isDefault && onDelete && (
+                    <DropdownMenuItem 
+                      className="text-destructive focus:text-destructive"
+                      onClick={async () => {
+                        if (window.confirm("Are you sure you want to delete this template?")) {
+                          try {
+                            await onDelete(template.id);
+                            toast.success("Template deleted");
+                          } catch (error) {
+                            toast.error("Failed to delete template");
+                          }
+                        }
+                      }}
+                    >
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <CardTitle className="text-lg line-clamp-1">{template.name}</CardTitle>
+            <CardDescription className="line-clamp-2">
+              {template.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-grow">
+            <div className={cn(
+              "text-sm text-muted-foreground whitespace-pre-wrap overflow-hidden transition-all",
+              expandedId === template.id ? "max-h-96" : "max-h-24"
+            )}>
+              {template.content}
+            </div>
+            {template.content.length > 120 && (
+              <Button 
+                variant="link" 
+                size="sm" 
+                onClick={() => toggleExpand(template.id)}
+                className="p-0 h-auto mt-1 text-xs"
+              >
+                {expandedId === template.id ? "Show less" : "Show more"}
+              </Button>
+            )}
+          </CardContent>
+          <CardFooter className="pt-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => router.push(`/notes/new?template=${template.id}`)}
+            >
+              Use Template
+            </Button>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 } 

@@ -1,22 +1,24 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import { Template } from "@/lib/db/schema";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -24,142 +26,116 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Save } from "lucide-react";
+import Link from "next/link";
 
-const templateSchema = z.object({
+// Form validation schema
+const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
-  description: z.string().max(500).nullable(),
+  description: z.string().max(500).optional(),
   content: z.string().min(1, "Content is required"),
   category: z.enum(["custom", "brain-dump", "journal", "to-do", "mood-tracking"]),
 });
 
-type TemplateFormValues = z.infer<typeof templateSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 interface TemplateEditorProps {
-  mode: "create" | "edit";
-  template?: Template;
-  userId: string;
+  template?: Template | null;
+  isNew: boolean;
 }
 
-async function createTemplate(values: TemplateFormValues & { userId: string }) {
-  const response = await fetch("/api/templates", {
-    method: "POST",
-    body: JSON.stringify(values),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to create template");
-  }
-  
-  return response.json();
-}
-
-async function updateTemplate(id: string, values: TemplateFormValues) {
-  const response = await fetch(`/api/templates/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(values),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to update template");
-  }
-  
-  return response.json();
-}
-
-export function TemplateEditor({ mode, template, userId }: TemplateEditorProps) {
+export function TemplateEditor({ template, isNew }: TemplateEditorProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  
-  const form = useForm<TemplateFormValues>({
-    resolver: zodResolver(templateSchema),
-    defaultValues: template ? {
-      name: template.name,
-      description: template.description || "",
-      content: template.content,
-      category: template.category,
-    } : {
-      name: "",
-      description: "",
-      content: "",
-      category: "custom",
-    },
-  });
-  
-  function onSubmit(values: TemplateFormValues) {
-    startTransition(async () => {
-      try {
-        if (mode === "create") {
-          await createTemplate({ ...values, userId });
-          toast.success("Template created successfully");
-        } else if (template) {
-          await updateTemplate(template.id, values);
-          toast.success("Template updated successfully");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Initialize form with template values or defaults
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: template
+      ? {
+          name: template.name,
+          description: template.description || "",
+          content: template.content,
+          category: template.category,
         }
-        router.push("/templates");
-        router.refresh();
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "An error occurred");
+      : {
+          name: "",
+          description: "",
+          content: "",
+          category: "custom",
+        },
+  });
+
+  // Handle form submission
+  const onSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      const endpoint = isNew ? "/api/templates" : `/api/templates/${template?.id}`;
+      const method = isNew ? "POST" : "PATCH";
+      
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save template");
       }
-    });
-  }
+      
+      toast.success(isNew ? "Template created" : "Template updated");
+      router.push("/templates");
+      router.refresh();
+    } catch (error) {
+      console.error("Error saving template:", error);
+      toast.error((error as Error).message || "Failed to save template");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
+  const categoryOptions = [
+    { value: "custom", label: "Custom" },
+    { value: "brain-dump", label: "Brain Dump" },
+    { value: "journal", label: "Journal" },
+    { value: "to-do", label: "To-Do List" },
+    { value: "mood-tracking", label: "Mood Tracking" },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/templates")}
-          className="mr-2"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+    <div className="max-w-3xl mx-auto">
+      <div className="flex items-center mb-8">
+        <Button variant="ghost" asChild className="mr-4">
+          <Link href="/templates">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Templates
+          </Link>
         </Button>
         <h1 className="text-2xl font-bold">
-          {mode === "create" ? "Create Template" : "Edit Template"}
+          {isNew ? "Create New Template" : "Edit Template"}
         </h1>
       </div>
-      
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Template Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Template name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Brief description of the template" 
-                    className="h-20 resize-none"
-                    {...field}
-                    value={field.value || ""}
+                  <Input 
+                    placeholder="e.g., Weekly Planning Template" 
+                    {...field} 
                   />
                 </FormControl>
+                <FormDescription>
+                  A descriptive name for your template
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -181,13 +157,37 @@ export function TemplateEditor({ mode, template, userId }: TemplateEditorProps) 
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="custom">Custom</SelectItem>
-                    <SelectItem value="brain-dump">Brain Dump</SelectItem>
-                    <SelectItem value="journal">Journal</SelectItem>
-                    <SelectItem value="to-do">To-Do</SelectItem>
-                    <SelectItem value="mood-tracking">Mood Tracking</SelectItem>
+                    {categoryOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                <FormDescription>
+                  Choose a category for your template
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Briefly describe what this template is for" 
+                    {...field} 
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormDescription>
+                  A short description to help you remember what this template is for
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -198,31 +198,39 @@ export function TemplateEditor({ mode, template, userId }: TemplateEditorProps) 
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Content</FormLabel>
+                <FormLabel>Template Content</FormLabel>
                 <FormControl>
                   <Textarea 
-                    placeholder="Template content..." 
-                    className="min-h-[300px]"
-                    {...field}
+                    placeholder="Enter the content of your template..." 
+                    className="min-h-[200px]"
+                    {...field} 
                   />
                 </FormControl>
+                <FormDescription>
+                  This will be used as the starting point when creating notes with this template
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
           
-          <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
+          <div className="flex gap-4">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {isSubmitting 
+                ? isNew ? "Creating..." : "Updating..." 
+                : isNew ? "Create Template" : "Update Template"
+              }
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
               onClick={() => router.push("/templates")}
-              disabled={isPending}
             >
               Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === "create" ? "Create Template" : "Save Changes"}
             </Button>
           </div>
         </form>

@@ -28,6 +28,7 @@ export const user = pgTable('User', {
   password: varchar('password', { length: 64 }),
   name: varchar('name', { length: 100 }),
   avatarUrl: text('avatarUrl'),
+  metadata: text('metadata'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
 });
 
