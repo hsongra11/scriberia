@@ -28,7 +28,7 @@ export async function GET(
       );
     }
 
-    const noteId = params.id;
+    const noteId = await params.id;
 
     // Verify the note exists and belongs to the user
     const [note] = await db
@@ -78,7 +78,7 @@ export async function POST(
       );
     }
 
-    const noteId = params.id;
+    const noteId = await params.id;
 
     // Verify the note exists and belongs to the user
     const [note] = await db

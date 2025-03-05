@@ -30,7 +30,7 @@ export async function GET(
       );
     }
 
-    const taskId = params.id;
+    const taskId = await params.id;
 
     // Get the task, ensuring it belongs to the user
     const [task] = await db
@@ -75,7 +75,7 @@ export async function PATCH(
       );
     }
 
-    const taskId = params.id;
+    const taskId = await params.id;
 
     // Verify the task exists and belongs to the user
     const [existingTask] = await db
@@ -166,7 +166,7 @@ export async function DELETE(
       );
     }
 
-    const taskId = params.id;
+    const taskId = await params.id;
 
     // Verify the task exists and belongs to the user
     const [existingTask] = await db

@@ -24,7 +24,9 @@ export default async function TemplateEditPage({ params, searchParams }: Templat
     throw new Error("Database connection not available");
   }
 
-  const isNewTemplate = params.id === "new";
+  // Await params before accessing id
+  const id = await params.id;
+  const isNewTemplate = id === "new";
   let template = null;
 
   if (!isNewTemplate) {
@@ -34,7 +36,7 @@ export default async function TemplateEditPage({ params, searchParams }: Templat
       .from(templateSchema)
       .where(
         and(
-          eq(templateSchema.id, params.id),
+          eq(templateSchema.id, id),
           eq(templateSchema.userId, session.user.id)
         )
       );

@@ -18,13 +18,15 @@ export default async function NoteEditPage(props: Props) {
     redirect("/signin");
   }
 
-  const isNewNote = params.id === "new";
+  // Await params before accessing id
+  const id = await params.id;
+  const isNewNote = id === "new";
   let note = null;
   let error = null;
 
   // For existing notes, fetch the note
   if (!isNewNote) {
-    const result = await getNote(params.id);
+    const result = await getNote(id);
     note = result.note;
     error = result.error;
   }
@@ -51,7 +53,7 @@ export default async function NoteEditPage(props: Props) {
     <div className="container mx-auto py-6">
       <div className="mb-4">
         <Button variant="ghost" asChild>
-          <Link href={isNewNote ? "/notes" : `/notes/${params.id}`}>
+          <Link href={isNewNote ? "/notes" : `/notes/${id}`}>
             <ArrowLeft className="mr-2 size-4" />
             {isNewNote ? "Back to Notes" : "Back to Note"}
           </Link>

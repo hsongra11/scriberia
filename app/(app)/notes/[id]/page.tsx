@@ -21,14 +21,16 @@ export default async function NotePage({ params, searchParams }: NotePageProps) 
     redirect("/signin");
   }
 
-  const isNewNote = params.id === "new";
+  // Await params before accessing id
+  const id = await params.id;
+  const isNewNote = id === "new";
   
   // For new notes, redirect to edit page
   if (isNewNote) {
     redirect(`/notes/new/edit`);
   }
 
-  const { note, error } = await getNote(params.id);
+  const { note, error } = await getNote(id);
   
   // Get templates for applying template functionality
   const { templates } = await getUserTemplates();

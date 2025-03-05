@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const templateId = params.id;
+    const templateId = await params.id;
 
     // Get the template by ID, ensuring it belongs to the current user
     const [template] = await db
@@ -79,7 +79,7 @@ export async function PATCH(
       );
     }
 
-    const templateId = params.id;
+    const templateId = await params.id;
     
     // Verify the template exists and belongs to the user
     const [template] = await db
@@ -161,7 +161,7 @@ export async function DELETE(
       );
     }
 
-    const templateId = params.id;
+    const templateId = await params.id;
     
     // Verify the template exists and belongs to the user
     const [template] = await db
