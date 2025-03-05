@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth } from '@/app/(auth)/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateShareLink, deactivateShareLink } from '@/lib/sharing/generate-link';
 import { z } from 'zod';
@@ -15,8 +15,11 @@ const deactivateRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const userId = session.user.id;

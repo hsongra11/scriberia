@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth } from '@/app/(auth)/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { task as taskTable } from '@/lib/db/schema';
@@ -64,10 +64,18 @@ export async function POST(request: NextRequest) {
       // Format tasks for insertion into the database
       const tasksToCreate = formatTasksForCreation(validatedTasks, noteId, userId);
       
-      // Insert tasks into the database
-      const createdTasks = await db.insert(taskTable).values(tasksToCreate).returning();
+      // Extract tasks and save them to the database
+      if (tasksToCreate.length > 0 && db) {
+        // Make sure userId is a string
+        const tasksWithValidUserId = tasksToCreate.map(t => ({
+          ...t,
+          userId: t.userId || ''
+        }));
+        
+        await db.insert(taskTable).values(tasksWithValidUserId).returning();
+      }
       
-      return NextResponse.json({ tasks: createdTasks }, { status: 200 });
+      return NextResponse.json({ tasks: tasksToCreate }, { status: 200 });
     } catch (error) {
       console.error('Error in task generation:', error);
       return NextResponse.json(

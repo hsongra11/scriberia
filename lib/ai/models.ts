@@ -32,21 +32,21 @@ if (providerInstances.openai) {
 
 // Add Groq models if available
 if (providerInstances.groq) {
-  languageModels['groq-small'] = providerInstances.groq(providers.groq.smallModel);
-  languageModels['groq-large'] = providerInstances.groq(providers.groq.largeModel);
-  languageModels['groq-mixtral'] = providerInstances.groq(providers.groq.mixtralModel);
+  languageModels['groq-small'] = providerInstances.groq(providers.groq.smallModel) as any;
+  languageModels['groq-large'] = providerInstances.groq(providers.groq.largeModel) as any;
+  languageModels['groq-mixtral'] = providerInstances.groq(providers.groq.mixtralModel) as any;
 }
 
 // Add Anthropic models if available
 if (providerInstances.anthropic) {
-  languageModels['anthropic-small'] = providerInstances.anthropic(providers.anthropic.smallModel);
-  languageModels['anthropic-large'] = providerInstances.anthropic(providers.anthropic.largeModel);
+  languageModels['anthropic-small'] = providerInstances.anthropic(providers.anthropic.smallModel) as any;
+  languageModels['anthropic-large'] = providerInstances.anthropic(providers.anthropic.largeModel) as any;
 }
 
 // Add Fireworks models if available
 if (providerInstances.fireworks) {
   languageModels['fireworks-reasoning'] = wrapLanguageModel({
-    model: providerInstances.fireworks(providers.fireworks.reasoningModel),
+    model: providerInstances.fireworks(providers.fireworks.reasoningModel) as any,
     middleware: extractReasoningMiddleware({ tagName: 'think' }),
   });
 }

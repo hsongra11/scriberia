@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getShareLinkByToken } from "@/lib/sharing/generate-link";
-import { db } from "@/db";
-import { notes } from "@/db/schema";
+import { db } from "@/lib/db";
+import { note as noteSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NoteContent } from "@/components/notes/note-content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,11 +24,17 @@ export default async function SharedNotePage({ params }: SharedNotePageProps) {
   }
   
   // Get the note from the database
-  const note = await db.query.notes.findFirst({
-    where: eq(notes.id, shareLink.noteId),
-  });
+  if (!db) {
+    throw new Error("Database connection not available");
+  }
   
-  if (!note) {
+  const noteData = await db
+    .select()
+    .from(noteSchema)
+    .where(eq(noteSchema.id, shareLink.noteId))
+    .then(rows => rows[0]);
+  
+  if (!noteData) {
     notFound();
   }
   
@@ -36,7 +42,7 @@ export default async function SharedNotePage({ params }: SharedNotePageProps) {
     <div className="container max-w-4xl py-10">
       <Card className="border-none shadow-none">
         <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-bold">{note.title || "Untitled Note"}</CardTitle>
+          <CardTitle className="text-2xl font-bold">{noteData.title || "Untitled Note"}</CardTitle>
           <div className="text-sm text-muted-foreground">
             Shared on {format(shareLink.createdAt, "MMMM d, yyyy")}
             {shareLink.expiresAt && (
@@ -46,8 +52,8 @@ export default async function SharedNotePage({ params }: SharedNotePageProps) {
         </CardHeader>
         <CardContent>
           <NoteContent 
-            note={note} 
-            content={note.content || ""} 
+            note={noteData} 
+            content={noteData.content || ""} 
             onContentChange={() => {}} 
             isEditing={false}
             className="min-h-[50vh]"

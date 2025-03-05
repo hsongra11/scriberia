@@ -182,7 +182,7 @@ This implementation plan outlines the steps to transform the existing AI chatbot
 
 ## Main Pages & Routes
 
-- [ ] Step 17: Create Dashboard Page
+- [x] Step 17: Create Dashboard Page
   - **Task**: Create main dashboard page with recent notes and tasks
   - **Files**:
     - `app/(app)/dashboard/page.tsx`: Create dashboard page
@@ -192,7 +192,7 @@ This implementation plan outlines the steps to transform the existing AI chatbot
   - **Step Dependencies**: Step 6, Step 14
   - **User Instructions**: None
 
-- [ ] Step 18: Create Notes Page and Navigation
+- [x] Step 18: Create Notes Page and Navigation
   - **Task**: Create notes page with filtering and search
   - **Files**:
     - `app/(app)/notes/page.tsx`: Create notes page
