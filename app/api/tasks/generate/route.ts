@@ -2,12 +2,13 @@ import { auth } from '@/app/(auth)/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { task as taskTable } from '@/lib/db/schema';
-import { generateTasksFromText, formatTasksForCreation, validateAndFormatTasks } from '@/lib/ai/task-generator';
+import { generateTasksFromNote, formatTasksForCreation, validateAndFormatTasks } from '@/lib/ai/task-generator';
+import { streamText } from 'ai';
 import { z } from 'zod';
 
 const requestSchema = z.object({
   content: z.string().min(1, "Content is required"),
-  noteId: z.string().uuid().optional(),
+  noteId: z.string().optional(),
   maxTasks: z.number().min(1).max(10).default(5),
   model: z.string().optional(),
 });
@@ -35,7 +36,21 @@ export async function POST(request: NextRequest) {
     
     // For streaming response (AI generating tasks)
     if (request.headers.get('accept') === 'text/event-stream') {
-      return generateTasksFromText(content, { maxTasks, model });
+      // Create a mock note from the content
+      const mockNote = {
+        id: noteId || 'temp-id',
+        title: 'Content Analysis',
+        content,
+        userId: userId || '',
+        createdAt: new Date(),
+        lastEditedAt: new Date(),
+        isDeleted: false,
+        isArchived: false,
+        category: 'custom' as const,
+        templateId: null
+      };
+      
+      return generateTasksFromNote(mockNote);
     }
     
     // For direct API usage (non-streaming)

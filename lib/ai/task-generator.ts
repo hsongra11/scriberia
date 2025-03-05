@@ -1,91 +1,102 @@
 import { nanoid } from 'nanoid';
-import { StreamingTextResponse, LangChainStream } from 'ai';
+import { StreamData } from 'ai';
 import { ChatOpenAI } from '@langchain/openai';
 import { StructuredOutputParser } from 'langchain/output_parsers';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { z } from 'zod';
+import { Note } from '../db/schema';
 
-// Define the output schema for task generation
-export const TaskSchema = z.object({
+// Define the GeneratedTask type
+export interface GeneratedTask {
+  content: string;
+  priority: number;
+  dueDate: Date | null;
+}
+
+// Define the TaskSchema
+const TaskSchema = z.object({
   tasks: z.array(
     z.object({
-      content: z.string().describe('The task content/description'),
-      priority: z.number().min(1).max(3).describe('Priority level: 1 (Low), 2 (Medium), 3 (High)'),
-      dueDate: z.string().optional().describe('ISO string of the due date (if applicable)'),
+      content: z.string(),
+      priority: z.number(),
+      dueDate: z.string().nullable(),
     })
-  ),
+  )
 });
 
-export type GeneratedTask = z.infer<typeof TaskSchema>['tasks'][number];
+// Define the output schema for task generation
+const parser = StructuredOutputParser.fromZodSchema(
+  z.array(
+    z.object({
+      content: z.string().describe('The task description.'),
+      priority: z.number().describe('Priority from 1-3 with 1 being highest priority.'),
+      dueDate: z.string().optional().describe('The due date in YYYY-MM-DD format, if applicable.'),
+    })
+  )
+);
 
-const TASK_SYSTEM_PROMPT = `
-You are an intelligent task extraction assistant that helps users identify actionable tasks from their notes or conversations.
+// Template for generating tasks from note content
+const template = `
+Based on the following note content, generate a list of actionable tasks.
+Extract any explicit tasks mentioned, and also infer implicit tasks that would help accomplish what's in the note.
 
-Your job is to:
-1. Analyze the provided text
-2. Extract meaningful, actionable tasks
-3. Assign appropriate priority levels (1=Low, 2=Medium, 3=High) based on context and urgency
-4. Set reasonable due dates when time elements are mentioned (or leave empty if not specified)
-5. Format the output as a structured list of tasks
+Note Title: {noteTitle}
+Note Content:
+{noteContent}
 
-Prioritize clarity, practicality, and usefulness in the extracted tasks.
-Output ONLY the requested JSON structure without any additional explanation.
+{format_instructions}
+
+Return only the JSON array of tasks.
 `;
 
-export async function generateTasksFromText(
-  content: string,
-  options?: {
-    maxTasks?: number;
-    model?: string;
+// Create the prompt template
+const prompt = PromptTemplate.fromTemplate(template);
+
+// Function to generate tasks from a note
+export async function generateTasksFromNote(note: Note) {
+  try {
+    // Initialize the OpenAI model
+    const model = new ChatOpenAI({
+      modelName: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+      temperature: 0.2,
+    });
+
+    // Create a stream data object to track the generated tasks
+    const stream = new StreamData();
+
+    // Format the prompt with the note details and parser instructions
+    const formattedPrompt = await prompt.format({
+      noteTitle: note.title,
+      noteContent: note.content,
+      format_instructions: parser.getFormatInstructions(),
+    });
+
+    // Call the model with streaming enabled
+    const response = model.call([
+      { role: 'user', content: formattedPrompt }
+    ]);
+
+    // Parse the response
+    const result = await response;
+    const parsed = await parser.parse(result.content as string);
+
+    // Process each task in the parsed response
+    const tasks = parsed.map((task: any) => ({
+      content: task.content,
+      priority: task.priority,
+      dueDate: task.dueDate ? new Date(task.dueDate) : null,
+    }));
+
+    // Set the data and close the stream
+    stream.append(JSON.parse(JSON.stringify(tasks)));
+    stream.close();
+
+    // Return the processed tasks
+    return tasks;
+  } catch (error) {
+    console.error('Error generating tasks:', error);
+    throw new Error('Failed to generate tasks from note');
   }
-) {
-  const { maxTasks = 5, model = 'gpt-3.5-turbo' } = options || {};
-  
-  const parser = StructuredOutputParser.fromZodSchema(TaskSchema);
-  const formatInstructions = parser.getFormatInstructions();
-
-  const prompt = PromptTemplate.fromTemplate(`
-{systemPrompt}
-
-TEXT TO ANALYZE:
-"""
-{userText}
-"""
-
-INSTRUCTIONS:
-Extract up to {maxTasks} actionable tasks from the text above.
-For each task:
-- Create a clear, concise task description
-- Assign a priority (1=Low, 2=Medium, 3=High) based on perceived urgency and importance
-- If a specific timeframe is mentioned, include a due date in ISO format (YYYY-MM-DD), otherwise leave it blank
-
-{formatInstructions}
-`);
-
-  const { stream, handlers } = LangChainStream();
-
-  const llm = new ChatOpenAI({
-    modelName: model,
-    temperature: 0.2,
-    streaming: true,
-  });
-
-  const chain = prompt.pipe(llm).pipe(parser);
-
-  // Execute the chain with the event handler to enable streaming
-  chain.invoke(
-    {
-      systemPrompt: TASK_SYSTEM_PROMPT,
-      userText: content,
-      maxTasks: maxTasks.toString(),
-      formatInstructions,
-    },
-    {
-      callbacks: [handlers],
-    },
-  );
-
-  return new StreamingTextResponse(stream);
 }
 
 export async function validateAndFormatTasks(rawTasks: any[]): Promise<GeneratedTask[]> {
@@ -94,7 +105,7 @@ export async function validateAndFormatTasks(rawTasks: any[]): Promise<Generated
     const result = TaskSchema.parse({ tasks: rawTasks });
     
     // Process due dates (convert from string to Date where applicable)
-    return result.tasks.map(task => ({
+    return result.tasks.map((task: any) => ({
       ...task,
       dueDate: task.dueDate ? new Date(task.dueDate) : null,
     }));
@@ -114,7 +125,6 @@ export function formatTasksForCreation(generatedTasks: GeneratedTask[], noteId?:
     noteId: noteId || null,
     userId: userId,
     createdAt: new Date(),
-    updatedAt: new Date(),
     completedAt: null,
   }));
 } 

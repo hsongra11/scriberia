@@ -8,28 +8,30 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-interface NotePageProps {
+interface NoteEditPageProps {
   params: {
     id: string;
   };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function NotePage({ params, searchParams }: NotePageProps) {
+export default async function NoteEditPage({ params, searchParams }: NoteEditPageProps) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/signin");
   }
 
   const isNewNote = params.id === "new";
-  
-  // For new notes, redirect to edit page
-  if (isNewNote) {
-    redirect(`/notes/new/edit`);
+  let note = null;
+  let error = null;
+
+  // For existing notes, fetch the note
+  if (!isNewNote) {
+    const result = await getNote(params.id);
+    note = result.note;
+    error = result.error;
   }
 
-  const { note, error } = await getNote(params.id);
-  
   // Get templates for applying template functionality
   const { templates } = await getUserTemplates();
 
@@ -52,9 +54,9 @@ export default async function NotePage({ params, searchParams }: NotePageProps) 
     <div className="container mx-auto py-6">
       <div className="mb-4">
         <Button variant="ghost" asChild>
-          <Link href="/notes">
+          <Link href={isNewNote ? "/notes" : `/notes/${params.id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Notes
+            {isNewNote ? "Back to Notes" : "Back to Note"}
           </Link>
         </Button>
       </div>
@@ -63,14 +65,14 @@ export default async function NotePage({ params, searchParams }: NotePageProps) 
         <NoteEditor 
           note={note} 
           templates={templates}
-          isNewNote={false}
+          isNewNote={isNewNote}
         />
       </div>
     </div>
   );
 }
 
-export function NotePageSkeleton() {
+export function NoteEditPageSkeleton() {
   return (
     <div className="container mx-auto py-6">
       <div className="mb-4">
