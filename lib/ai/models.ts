@@ -56,6 +56,36 @@ export const myProvider = customProvider({
   imageModels,
 });
 
+// Helper function to safely get a language model with fallback
+export function safeLanguageModel(modelId: string) {
+  try {
+    // First, try to get the model directly
+    if (languageModels[modelId]) {
+      return myProvider.languageModel(modelId);
+    }
+    
+    // If it's a Groq model that might be misconfigured with a direct model name
+    if (modelId.startsWith('groq-llama3-') || modelId.startsWith('groq-mixtral-')) {
+      // Map to the correct ID
+      const mappedId = modelId.includes('llama3-8b') ? 'groq-small' :
+                      modelId.includes('llama3-70b') ? 'groq-large' :
+                      modelId.includes('mixtral') ? 'groq-mixtral' : null;
+                      
+      if (mappedId && languageModels[mappedId]) {
+        console.warn(`Remapping model ${modelId} to ${mappedId}`);
+        return myProvider.languageModel(mappedId);
+      }
+    }
+    
+    // Fallback to default
+    console.warn(`Model ${modelId} not found, falling back to ${DEFAULT_CHAT_MODEL}`);
+    return myProvider.languageModel(DEFAULT_CHAT_MODEL);
+  } catch (error) {
+    console.error(`Error getting language model ${modelId}:`, error);
+    return myProvider.languageModel(DEFAULT_CHAT_MODEL);
+  }
+}
+
 interface ChatModel {
   id: string;
   name: string;
