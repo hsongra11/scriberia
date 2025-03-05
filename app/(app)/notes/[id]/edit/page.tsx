@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, } from "lucide-react";
 
-interface PageProps {
-  params: { id: string };
+type Props = {
+  params: { id: string }
 }
 
-export default async function NoteEditPage({ params }: PageProps) {
+export default async function NoteEditPage(props: Props) {
+  const { params } = props;
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/signin");

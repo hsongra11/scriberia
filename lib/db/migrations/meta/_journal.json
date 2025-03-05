@@ -43,6 +43,13 @@
       "when": 1741105415877,
       "tag": "0005_sparkling_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741176203006,
+      "tag": "0006_wild_sentry",
+      "breakpoints": true
     }
   ]
 }
