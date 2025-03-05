@@ -1,189 +1,232 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Template } from '@/lib/db/schema';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Template } from "@/lib/db/schema";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { TemplateCategory } from '@/lib/templates/default-templates';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Markdown } from '@/components/markdown';
+} from "@/components/ui/select";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+const templateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  description: z.string().max(500).nullable(),
+  content: z.string().min(1, "Content is required"),
+  category: z.enum(["custom", "brain-dump", "journal", "to-do", "mood-tracking"]),
+});
+
+type TemplateFormValues = z.infer<typeof templateSchema>;
 
 interface TemplateEditorProps {
-  template?: Partial<Template>;
-  onSave: (templateData: {
-    name: string;
-    description: string;
-    content: string;
-    category: TemplateCategory;
-  }) => void;
-  onCancel?: () => void;
-  saving?: boolean;
+  mode: "create" | "edit";
+  template?: Template;
+  userId: string;
 }
 
-export function TemplateEditor({
-  template,
-  onSave,
-  onCancel,
-  saving = false,
-}: TemplateEditorProps) {
-  const initialData = {
-    name: template?.name || '',
-    description: template?.description || '',
-    content: template?.content || '',
-    category: (template?.category as TemplateCategory) || 'custom',
-  };
+async function createTemplate(values: TemplateFormValues & { userId: string }) {
+  const response = await fetch("/api/templates", {
+    method: "POST",
+    body: JSON.stringify(values),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to create template");
+  }
+  
+  return response.json();
+}
 
-  const [formData, setFormData] = useState(initialData);
-  const [activeTab, setActiveTab] = useState<string>('edit');
+async function updateTemplate(id: string, values: TemplateFormValues) {
+  const response = await fetch(`/api/templates/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(values),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to update template");
+  }
   
-  const handleCategoryChange = (value: string) => {
-    setFormData(prev => ({ ...prev, category: value as TemplateCategory }));
-  };
+  return response.json();
+}
+
+export function TemplateEditor({ mode, template, userId }: TemplateEditorProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      return; // Don't submit if name is empty
-    }
-    
-    onSave(formData);
-  };
+  const form = useForm<TemplateFormValues>({
+    resolver: zodResolver(templateSchema),
+    defaultValues: template ? {
+      name: template.name,
+      description: template.description || "",
+      content: template.content,
+      category: template.category,
+    } : {
+      name: "",
+      description: "",
+      content: "",
+      category: "custom",
+    },
+  });
   
-  const categories: { value: TemplateCategory; label: string }[] = [
-    { value: 'brain-dump', label: 'Brain Dump' },
-    { value: 'journal', label: 'Journal' },
-    { value: 'to-do', label: 'To-Do' },
-    { value: 'mood-tracking', label: 'Mood Tracking' },
-    { value: 'custom', label: 'Custom' },
-  ];
+  function onSubmit(values: TemplateFormValues) {
+    startTransition(async () => {
+      try {
+        if (mode === "create") {
+          await createTemplate({ ...values, userId });
+          toast.success("Template created successfully");
+        } else if (template) {
+          await updateTemplate(template.id, values);
+          toast.success("Template updated successfully");
+        }
+        router.push("/templates");
+        router.refresh();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "An error occurred");
+      }
+    });
+  }
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>
-          {template?.id ? 'Edit Template' : 'Create New Template'}
-        </CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">Template Name</label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter template name"
-              required
-            />
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/templates")}
+          className="mr-2"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-2xl font-bold">
+          {mode === "create" ? "Create Template" : "Edit Template"}
+        </h1>
+      </div>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Template name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium">Description</label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Describe the purpose of this template"
-              rows={2}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Brief description of the template" 
+                    className="h-20 resize-none"
+                    {...field}
+                    value={field.value || ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
-          <div className="space-y-2">
-            <label htmlFor="category" className="text-sm font-medium">Category</label>
-            <Select
-              value={formData.category}
-              onValueChange={handleCategoryChange}
-            >
-              <SelectTrigger id="category">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="custom">Custom</SelectItem>
+                    <SelectItem value="brain-dump">Brain Dump</SelectItem>
+                    <SelectItem value="journal">Journal</SelectItem>
+                    <SelectItem value="to-do">To-Do</SelectItem>
+                    <SelectItem value="mood-tracking">Mood Tracking</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
-          <div className="space-y-2">
-            <label htmlFor="content" className="text-sm font-medium">Template Content</label>
-            <p className="text-xs text-muted-foreground mb-2">
-              Use Markdown formatting. You can use placeholders like {'{{date}}'} or {'{{title}}'} that will be replaced when creating a note.
-            </p>
-            
-            <Tabs 
-              value={activeTab} 
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="edit">Edit</TabsTrigger>
-                <TabsTrigger value="preview">Preview</TabsTrigger>
-              </TabsList>
-              <TabsContent value="edit" className="border rounded-md mt-2">
-                <Textarea
-                  id="content"
-                  name="content"
-                  value={formData.content}
-                  onChange={handleChange}
-                  placeholder="# Note Title&#10;&#10;Your content here..."
-                  className="min-h-[200px] font-mono"
-                />
-              </TabsContent>
-              <TabsContent value="preview" className="border rounded-md p-4 min-h-[200px] mt-2">
-                {formData.content ? (
-                  <Markdown>{formData.content}</Markdown>
-                ) : (
-                  <div className="text-muted-foreground text-center py-8">
-                    Preview will appear here
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
-        </CardContent>
-        
-        <CardFooter className="flex justify-between">
-          {onCancel && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onCancel}
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Content</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Template content..." 
+                    className="min-h-[300px]"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="flex justify-end space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/templates")}
+              disabled={isPending}
             >
               Cancel
             </Button>
-          )}
-          
-          <Button 
-            type="submit" 
-            disabled={saving || !formData.name.trim()}
-          >
-            {saving ? 'Saving...' : (template?.id ? 'Update Template' : 'Create Template')}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+            <Button type="submit" disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {mode === "create" ? "Create Template" : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 } 
